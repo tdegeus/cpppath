@@ -1,0 +1,9 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+
+Name: cpppath
+Description: Simple file-path library
+Requires:
+Version: @CPPPATH_VERSION_NUMBER@
+Libs:
+Cflags: -I${prefix}/@INCLUDE_INSTALL_DIR@
