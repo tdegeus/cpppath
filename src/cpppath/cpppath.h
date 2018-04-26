@@ -14,6 +14,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <string>
 #include <vector>
@@ -48,6 +49,8 @@ namespace cpppath {
 
 inline std::string dirname (const std::string &path);
 inline std::string filename(const std::string &path);
+
+inline bool exists(const std::string& fname);
 
 // -------------------------------------------------------------------------------------------------
 

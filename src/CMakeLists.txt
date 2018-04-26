@@ -15,6 +15,7 @@ project(cpppath)
 # list of header files
 set(headers
   cpppath/cpppath.h
+  cpppath/cpppath.cpp
 )
 
 # options
