@@ -15,6 +15,8 @@
 
 namespace cpppath {
 
+const std::string sep = "/";
+
 // -------------------------------------------------------------------------------------------------
 
 inline std::string dirname(const std::string &path)
@@ -44,6 +46,18 @@ inline bool exists(const std::string& fname)
   std::ifstream file(fname);
 
   return static_cast<bool>(file);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string join(const std::string &a, const std::string &b)
+{
+  if ( a.size() == 0 ) return b;
+  if ( b.size() == 0 ) return a;
+
+  if ( std::strcmp(&a[a.size()-1], &sep[0]) == 0 ) return a+b;
+
+  return a + "/" + b;
 }
 
 // -------------------------------------------------------------------------------------------------

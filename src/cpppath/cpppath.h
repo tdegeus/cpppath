@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <string.h>
 #include <iso646.h> // to fix a Microsoft Visual Studio error on "and" and "or"
 
 // =================================================================================================
@@ -49,6 +50,8 @@ namespace cpppath {
 
 inline std::string dirname (const std::string &path);
 inline std::string filename(const std::string &path);
+
+inline std::string join(const std::string &a, const std::string &b);
 
 inline bool exists(const std::string& fname);
 
