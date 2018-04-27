@@ -55,7 +55,7 @@ inline std::string join(const std::string &a, const std::string &b)
   if ( a.size() == 0 ) return b;
   if ( b.size() == 0 ) return a;
 
-  if ( std::strcmp(&a[a.size()-1], &sep[0]) == 0 ) return a+b;
+  if ( strcmp(&a[a.size()-1], &sep[0]) == 0 ) return a+b;
 
   return a + "/" + b;
 }
