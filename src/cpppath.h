@@ -4,18 +4,53 @@
 
 ================================================================================================= */
 
-#ifndef CPPPATH_CPP
-#define CPPPATH_CPP
+#ifndef CPPPATH_H
+#define CPPPATH_H
 
-// =================================================================================================
+// ==================================== PREPROCESSOR DIRECTIVES ====================================
 
-#include "cpppath.h"
+// ---------------------------------------- load libraries -----------------------------------------
 
-// =================================================================================================
+#include <assert.h>
+#include <iostream>
+#include <fstream>
+#include <cstring>
+#include <string>
+#include <vector>
+
+// -------------------------------------- version information --------------------------------------
+
+#define CPPPATH_WORLD_VERSION 0
+#define CPPPATH_MAJOR_VERSION 0
+#define CPPPATH_MINOR_VERSION 2
+
+#define CPPPATH_VERSION_AT_LEAST(x,y,z) \
+  (CPPPATH_WORLD_VERSION>x || (CPPPATH_WORLD_VERSION>=x && \
+  (CPPPATH_MAJOR_VERSION>y || (CPPPATH_MAJOR_VERSION>=y && \
+                               CPPPATH_MINOR_VERSION>=z))))
+
+#define CPPPATH_VERSION(x,y,z) \
+  (CPPPATH_WORLD_VERSION==x && \
+   CPPPATH_MAJOR_VERSION==y && \
+   CPPPATH_MINOR_VERSION==z)
+
+// -------------------------- contain everything in the namespace cpppath --------------------------
 
 namespace cpppath {
 
+// =========================================== OVERVIEW ============================================
+
 const std::string sep = "/";
+
+inline std::string dirname(const std::string &path);
+
+inline std::string filename(const std::string &path);
+
+inline std::string join(const std::string &a, const std::string &b);
+
+inline bool exists(const std::string& fname);
+
+// ========================================= IMPLEMENATION =========================================
 
 // -------------------------------------------------------------------------------------------------
 
@@ -60,11 +95,9 @@ inline std::string join(const std::string &a, const std::string &b)
   return a + "/" + b;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-} // namespace ...
-
 // =================================================================================================
+
+} // namespace
 
 #endif
 

@@ -14,8 +14,7 @@ project(cpppath)
 
 # list of header files
 set(headers
-  cpppath/cpppath.h
-  cpppath/cpppath.cpp
+  cpppath.h
 )
 
 # options
@@ -32,9 +31,9 @@ endif()
 # paths
 # -----
 
-set(CPPPATH_ROOT_DIR          "${CMAKE_INSTALL_PREFIX}")
-set(CPPPATH_INCLUDE_DIR       "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}")
-set(INCLUDE_INSTALL_DIR      "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+set(CPPPATH_ROOT_DIR         "${CMAKE_INSTALL_PREFIX}")
+set(CPPPATH_INCLUDE_DIR      "${CMAKE_INSTALL_INCLUDEDIR}")
+set(INCLUDE_INSTALL_DIR      "${CMAKE_INSTALL_INCLUDEDIR}")
 set(CMAKEPACKAGE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
 set(PKGCONFIG_INSTALL_DIR    "${CMAKE_INSTALL_DATADIR}/pkgconfig")
 
@@ -42,7 +41,7 @@ set(PKGCONFIG_INSTALL_DIR    "${CMAKE_INSTALL_DATADIR}/pkgconfig")
 # -------
 
 # automatically parse the version number
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}.h" version)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.h" version)
 string(REGEX MATCH "define[ \t]+CPPPATH_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(world_version "${CMAKE_MATCH_1}")
 string(REGEX MATCH "define[ \t]+CPPPATH_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
@@ -91,7 +90,7 @@ install(FILES
 install(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/${headers}
   DESTINATION
-  ${INCLUDE_INSTALL_DIR}/${PROJECT_NAME}
+  ${INCLUDE_INSTALL_DIR}
 )
 
 # print information to screen
