@@ -17,6 +17,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <tuple>
 
 // -------------------------------------- version information --------------------------------------
 
@@ -48,7 +49,7 @@ inline std::string filename(const std::string &path);
 
 inline std::string join(const std::string &a, const std::string &b);
 
-inline bool exists(const std::string& fname);
+inline bool exists(const std::string& path);
 
 // ========================================= IMPLEMENATION =========================================
 
@@ -56,7 +57,7 @@ inline bool exists(const std::string& fname);
 
 inline std::string dirname(const std::string &path)
 {
-  size_t idx = path.find_last_of("/");
+  size_t idx = path.find_last_of(sep);
 
   if ( idx == std::string::npos ) return "";
 
@@ -67,7 +68,7 @@ inline std::string dirname(const std::string &path)
 
 inline std::string filename(const std::string &path)
 {
-  size_t idx = path.find_last_of("/");
+  size_t idx = path.find_last_of(sep);
 
   if ( idx == std::string::npos ) return path;
 
@@ -76,9 +77,9 @@ inline std::string filename(const std::string &path)
 
 // -------------------------------------------------------------------------------------------------
 
-inline bool exists(const std::string& fname)
+inline bool exists(const std::string& path)
 {
-  std::ifstream file(fname);
+  std::ifstream file(path);
 
   return static_cast<bool>(file);
 }
@@ -92,7 +93,7 @@ inline std::string join(const std::string &a, const std::string &b)
 
   if ( strcmp(&a[a.size()-1], &sep[0]) == 0 ) return a+b;
 
-  return a + "/" + b;
+  return a + sep + b;
 }
 
 // =================================================================================================
