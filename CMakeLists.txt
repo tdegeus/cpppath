@@ -9,24 +9,21 @@ include(GNUInstallDirs)
 # project settings
 # ----------------
 
-# define project information
+# name
 project(cpppath)
 
-# list of header files
-set(headers
-  cpppath.h
-)
+# main header file (which the user includes)
+set(main_header src/cpppath.h)
 
-# options
-# -------
-
-# set options
-option(PKGCONFIG "Build pkg-config ${PROJECT_NAME}.pc file" ON)
-
-# disable pkg-config for native Windows builds
-if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
-  option(PKGCONFIG "Build pkg-config ${PROJECT_NAME}.pc file" OFF)
-endif()
+# automatically parse the version number
+file(READ "${main_header}" version)
+string(REGEX MATCH "define[ \t]+CPPPATH_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
+set(world_version "${CMAKE_MATCH_1}")
+string(REGEX MATCH "define[ \t]+CPPPATH_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
+set(major_version "${CMAKE_MATCH_1}")
+string(REGEX MATCH "define[ \t]+CPPPATH_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
+set(minor_version "${CMAKE_MATCH_1}")
+set(CPPPATH_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
 
 # paths
 # -----
@@ -36,19 +33,19 @@ set(CPPPATH_INCLUDE_DIR      "${CMAKE_INSTALL_INCLUDEDIR}")
 set(INCLUDE_INSTALL_DIR      "${CMAKE_INSTALL_INCLUDEDIR}")
 set(CMAKEPACKAGE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
 set(PKGCONFIG_INSTALL_DIR    "${CMAKE_INSTALL_DATADIR}/pkgconfig")
+set(fcmake                   "${PROJECT_NAME}Config.cmake")
+set(fpkg                     "${PROJECT_NAME}.pc")
 
-# version
+# options
 # -------
 
-# automatically parse the version number
-file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.h" version)
-string(REGEX MATCH "define[ \t]+CPPPATH_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(world_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+CPPPATH_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(major_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+CPPPATH_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(minor_version "${CMAKE_MATCH_1}")
-set(CPPPATH_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
+# configure pkg-config (default: on)
+option(PKGCONFIG "Build pkg-config ${fpkg} file" ON)
+
+# disable pkg-config for native Windows builds
+if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
+  option(PKGCONFIG "Build pkg-config ${fpkg} file" OFF)
+endif()
 
 # C++ standard
 # ------------
@@ -75,23 +72,15 @@ configure_package_config_file(
 
 # pkg-config
 if(PKGCONFIG)
-  configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${PKGCONFIG_INSTALL_DIR})
+  configure_file(${fpkg}.in ${fpkg} @ONLY)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fpkg} DESTINATION ${PKGCONFIG_INSTALL_DIR})
 endif()
 
 # CMake
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  DESTINATION
-  ${CMAKEPACKAGE_INSTALL_DIR}
-)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fcmake} DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
 
 # headers
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/${headers}
-  DESTINATION
-  ${INCLUDE_INSTALL_DIR}
-)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${main_header} DESTINATION ${INCLUDE_INSTALL_DIR})
 
 # print information to screen
 # ---------------------------

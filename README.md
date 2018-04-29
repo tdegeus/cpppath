@@ -8,6 +8,10 @@ Simple, header only, file-path module for C++.
 
 - [Usage](#usage)
 - [Overview](#overview)
+    - [dirname](#dirname)
+    - [filename](#filename)
+    - [exists](#exists)
+    - [join](#join)
 - [Installation](#installation)
 
 <!-- /MarkdownTOC -->
@@ -32,37 +36,37 @@ The `-I/path/to/cpppath` can be simplified or often even omitted by ['installing
 
 The following functions are available:
 
-*   **dirname**
+### dirname
 
-    ```cpp
-    std::string dirname(const std::string &path);
-    ```
+```cpp
+std::string dirname(const std::string &path);
+```
 
-    Return the directory from the `path`. Depending on the path, an empty string may be returned.
+Return the directory from the `path`. Depending on the path, an empty string may be returned.
 
-*   **filename**
+### filename
 
-    ```cpp
-    std::string filename(const std::string &path);
-    ```
+```cpp
+std::string filename(const std::string &path);
+```
 
-    Return the filename from the `path`. Depending on the path, an empty string may be returned.
+Return the filename from the `path`. Depending on the path, an empty string may be returned.
 
-*   **exists**
+### exists
 
-    ```cpp
-    bool exists(const std::string& path);
-    ```
+```cpp
+bool exists(const std::string& path);
+```
 
-    Return `true` is the `path` exists.
+Return `true` is the `path` exists.
 
-*   **join**
+### join
 
-    ```cpp
-    std::string join(const std::string &a, const std::string &b);
-    ```
+```cpp
+std::string join(const std::string &a, const std::string &b);
+```
 
-    Join path components.
+Join path components.
 
 ## Installation
 
@@ -87,7 +91,7 @@ Thereafter one usually does not have to specify any include path.
 > ```bash
 > export CPLUS_INCLUDE_PATH=$HOME/opt/include:$CPLUS_INCLUDE_PATH
 > ```
-> Usually one adds this line to the `~/.bashrc` (or its equivalent).
+> Usually one adds this line to the `~/.bashrc` (or its equivalent), see for example [this page](https://www.cyberciti.biz/faq/set-environment-variable-linux/).
 
 Should this not work, one can use
 
