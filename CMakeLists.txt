@@ -12,11 +12,14 @@ include(GNUInstallDirs)
 # name
 project(cpppath)
 
-# main header file (which the user includes)
-set(main_header src/cpppath.h)
+# file that contains the version information
+set(parse_version src/${PROJECT_NAME}.h)
+
+# header files
+set(headers src/${PROJECT_NAME}.h)
 
 # automatically parse the version number
-file(READ "${main_header}" version)
+file(READ "${parse_version}" version)
 string(REGEX MATCH "define[ \t]+CPPPATH_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
 set(world_version "${CMAKE_MATCH_1}")
 string(REGEX MATCH "define[ \t]+CPPPATH_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
@@ -79,8 +82,8 @@ endif()
 # CMake
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fcmake} DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
 
-# headers
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${main_header} DESTINATION ${INCLUDE_INSTALL_DIR})
+# header files
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${headers} DESTINATION ${INCLUDE_INSTALL_DIR})
 
 # print information to screen
 # ---------------------------

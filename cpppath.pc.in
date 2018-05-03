@@ -6,4 +6,4 @@ Description: Simple file-path library
 Requires:
 Version: @CPPPATH_VERSION_NUMBER@
 Libs:
-Cflags: -I${prefix}/@INCLUDE_INSTALL_DIR@
+Cflags: -I${prefix}/@CPPPATH_INCLUDE_DIR@
