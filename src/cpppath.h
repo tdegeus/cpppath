@@ -54,9 +54,9 @@ inline std::string filename(const std::string &path);
 inline std::string join(const std::vector<std::string> &paths);
 inline std::string join(const std::string &a, const std::string &b);
 
-// split sub-paths using the separator
+// split sub-paths using the separator (N.B. if "end==0" the upper bound in the last index)
 inline std::vector<std::string> split(const std::string& path);
-inline std::vector<std::string> split(const std::string& path, int start, int end);
+inline std::vector<std::string> split(const std::string& path, int start, int end=0);
 
 // normalize a path by collapsing redundant separators and up-level references
 inline std::string normpath(const std::string &path);
@@ -166,10 +166,12 @@ inline std::vector<std::string> split(const std::string& path, int begin, int en
   // number of path components
   size_t N = paths.size();
 
+  // implicit assumption
+  if ( end  == 0 ) end   = N;
+
   // allow negative indices, counting from the end
-  // N.B. -1 -> N (not zero)
-  if ( begin == -1 ) begin = N; else begin = (N+(begin%N)) % N;
-  if ( end   == -1 ) end   = N; else end   = (N+(end  %N)) % N;
+  if ( begin < 0 ) begin = (N+(begin%N)) % N;
+  if ( end   < 0 ) end   = (N+(end  %N)) % N;
 
   // allocate output
   std::vector<std::string> out;
