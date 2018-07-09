@@ -11,7 +11,10 @@ Simple, header only, file-path module for C++.
     - [dirname](#dirname)
     - [filename](#filename)
     - [exists](#exists)
+    - [split](#split)
     - [join](#join)
+    - [normpath](#normpath)
+    - [curdir](#curdir)
 - [Installation](#installation)
 
 <!-- /MarkdownTOC -->
@@ -60,13 +63,39 @@ bool exists(const std::string& path);
 
 Return `true` is the `path` exists.
 
+### split
+
+```cpp
+std::vector<std::string> split(const std::string& path);
+std::vector<std::string> split(const std::string& path, int start, int end);
+```
+
+Split sub-paths using the separator. The output is a list of path components. Optionally a subset of the list can be selected using the `start` and `end` indices. Negative indices may be used to that count from the right (instead of from the left).
+
 ### join
 
 ```cpp
+std::string join(const std::vector<std::string> &paths);
 std::string join(const std::string &a, const std::string &b);
 ```
 
-Join path components.
+Join path components using separator.
+
+### normpath
+
+```cpp
+std::string normpath(const std::string &path);
+```
+
+Normalize a path by collapsing redundant separators and up-level references so that `A//B`, `A/B/`, `A/./B` and `A/foo/../B` all become `A/B`. This string manipulation may change the meaning of a path that contains symbolic links.
+
+### curdir
+
+```cpp
+std::string curdir();
+```
+
+The current working directory.
 
 ## Installation
 

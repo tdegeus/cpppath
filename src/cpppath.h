@@ -25,7 +25,7 @@
 
 #define CPPPATH_WORLD_VERSION 0
 #define CPPPATH_MAJOR_VERSION 0
-#define CPPPATH_MINOR_VERSION 3
+#define CPPPATH_MINOR_VERSION 4
 
 #define CPPPATH_VERSION_AT_LEAST(x,y,z) \
   (CPPPATH_WORLD_VERSION>x || (CPPPATH_WORLD_VERSION>=x && \
@@ -50,15 +50,18 @@ const std::string sep = "/";
 inline std::string dirname (const std::string &path);
 inline std::string filename(const std::string &path);
 
-// join sub-paths together, using the separator
+// join sub-paths together using the separator
 inline std::string join(const std::vector<std::string> &paths);
 inline std::string join(const std::string &a, const std::string &b);
 
-// split sub-paths, using the separator
+// split sub-paths using the separator
 inline std::vector<std::string> split(const std::string& path);
 inline std::vector<std::string> split(const std::string& path, int start, int end);
 
-// return the current working directory
+// normalize a path by collapsing redundant separators and up-level references
+inline std::string normpath(const std::string &path);
+
+// the current working directory
 inline std::string curdir();
 
 // check if a path exists
@@ -175,6 +178,60 @@ inline std::vector<std::string> split(const std::string& path, int begin, int en
   for ( int i = begin ; i < end ; ++i ) out.push_back(paths[i]);
 
   return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string normpath(const std::string &path)
+{
+  // list of path components (this removes already all "//")
+  std::vector<std::string> paths = split(path);
+
+  // filter "."
+  {
+    // - temporary list of path components
+    std::vector<std::string> tmp;
+    // - copy, if not "."
+    for ( auto &i : paths )
+      if ( i != "." )
+        tmp.push_back(i);
+    // - rename temporary variable
+    paths = tmp;
+  }
+
+  // filter "foo/../"
+  {
+    // - loop to find all occurrences
+    while ( true )
+    {
+      // -- logical, break if ".." not found (below)
+      bool found = false;
+      // -- loop to find "..", if found collapse if with the preceding path component
+      for ( size_t i = 1 ; i < paths.size() ; ++i )
+      {
+        if ( paths[i] == ".." )
+        {
+          // --- temporary list of path components
+          std::vector<std::string> tmp;
+          // --- copy selection
+          for ( size_t j = 0 ; j < paths.size() ; ++j )
+            if ( j != i and j != i-1 )
+              tmp.push_back(paths[j]);
+          // --- rename temporary variable
+          paths = tmp;
+          // --- signal to continue searching
+          found = true;
+          // --- loop from the beginning of the path
+          break;
+        }
+      }
+      // -- break when no ".." are found
+      if ( !found ) break;
+    }
+  }
+
+  // return path
+  return join(paths);
 }
 
 // -------------------------------------------------------------------------------------------------
