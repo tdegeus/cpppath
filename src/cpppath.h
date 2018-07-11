@@ -107,9 +107,9 @@ inline std::string join(const std::vector<std::string> &paths)
       continue;
     }
 
-    if      ( strcmp(&path[0]          , &sep[0]) == 0 ) out += path;
-    else if ( strcmp(&out[out.size()-1], &sep[0]) == 0 ) out += path;
-    else                                                 out += sep + path;
+    if      ( path[0]           == sep[0] ) out += path;
+    else if ( out[out.size()-1] == sep[0] ) out += path;
+    else                                    out += sep + path;
   }
 
   return out;
@@ -186,6 +186,9 @@ inline std::vector<std::string> split(const std::string& path, int begin, int en
 
 inline std::string normpath(const std::string &path)
 {
+  // retain "/" prefix
+  bool root = path[0] == sep[0];
+
   // list of path components (this removes already all "//")
   std::vector<std::string> paths = split(path);
 
@@ -233,7 +236,8 @@ inline std::string normpath(const std::string &path)
   }
 
   // return path
-  return join(paths);
+  if ( root ) return "/"+join(paths);
+  else        return     join(paths);
 }
 
 // -------------------------------------------------------------------------------------------------
