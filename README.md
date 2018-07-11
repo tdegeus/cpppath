@@ -8,13 +8,14 @@ Simple, header only, file-path module for C++.
 
 - [Usage](#usage)
 - [Overview](#overview)
-    - [dirname](#dirname)
-    - [filename](#filename)
-    - [exists](#exists)
-    - [split](#split)
-    - [join](#join)
-    - [normpath](#normpath)
-    - [curdir](#curdir)
+    - [cpppath::dirname](#cpppathdirname)
+    - [cpppath::filename](#cpppathfilename)
+    - [cpppath::exists](#cpppathexists)
+    - [cpppath::split](#cpppathsplit)
+    - [cpppath::join](#cpppathjoin)
+    - [cpppath::select](#cpppathselect)
+    - [cpppath::normpath](#cpppathnormpath)
+    - [cpppath::curdir](#cpppathcurdir)
 - [Installation](#installation)
 
 <!-- /MarkdownTOC -->
@@ -39,7 +40,7 @@ The `-I/path/to/cpppath` can be simplified or often even omitted by ['installing
 
 The following functions are available:
 
-### dirname
+### cpppath::dirname
 
 ```cpp
 std::string dirname(const std::string &path);
@@ -47,7 +48,7 @@ std::string dirname(const std::string &path);
 
 Return the directory from the `path`. Depending on the path, an empty string may be returned.
 
-### filename
+### cpppath::filename
 
 ```cpp
 std::string filename(const std::string &path);
@@ -55,7 +56,7 @@ std::string filename(const std::string &path);
 
 Return the filename from the `path`. Depending on the path, an empty string may be returned.
 
-### exists
+### cpppath::exists
 
 ```cpp
 bool exists(const std::string& path);
@@ -63,7 +64,7 @@ bool exists(const std::string& path);
 
 Return `true` is the `path` exists.
 
-### split
+### cpppath::split
 
 ```cpp
 std::vector<std::string> split(const std::string& path);
@@ -72,7 +73,7 @@ std::vector<std::string> split(const std::string& path, int start, int end);
 
 Split sub-paths using the separator. The output is a list of path components. Optionally a subset of the list can be selected using the `start` and `end` indices. Negative indices may be used to that count from the right (instead of from the left).
 
-### join
+### cpppath::join
 
 ```cpp
 std::string join(const std::vector<std::string> &paths);
@@ -81,7 +82,15 @@ std::string join(const std::string &a, const std::string &b);
 
 Join path components using separator.
 
-### normpath
+### cpppath::select
+
+```cpp
+std::string select(const std::string& path, int start, int end);
+```
+
+Selection of sub-paths (see `split`). Negative indices may be used to that count from the right (instead of from the left).
+
+### cpppath::normpath
 
 ```cpp
 std::string normpath(const std::string &path);
@@ -89,7 +98,7 @@ std::string normpath(const std::string &path);
 
 Normalize a path by collapsing redundant separators and up-level references so that `A//B`, `A/B/`, `A/./B` and `A/foo/../B` all become `A/B`. This string manipulation may change the meaning of a path that contains symbolic links.
 
-### curdir
+### cpppath::curdir
 
 ```cpp
 std::string curdir();
