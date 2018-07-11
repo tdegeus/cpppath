@@ -58,6 +58,9 @@ inline std::string join(const std::string &a, const std::string &b);
 inline std::vector<std::string> split(const std::string& path);
 inline std::vector<std::string> split(const std::string& path, int start, int end=0);
 
+// select path of a path
+inline std::string select(const std::string& path, int start, int end=0);
+
 // normalize a path by collapsing redundant separators and up-level references
 inline std::string normpath(const std::string &path);
 
@@ -164,7 +167,7 @@ inline std::vector<std::string> split(const std::string& path, int begin, int en
   std::vector<std::string> paths = split(path);
 
   // number of path components
-  size_t N = paths.size();
+  int N = paths.size();
 
   // implicit assumption
   if ( end  == 0 ) end   = N;
@@ -180,6 +183,19 @@ inline std::vector<std::string> split(const std::string& path, int begin, int en
   for ( int i = begin ; i < end ; ++i ) out.push_back(paths[i]);
 
   return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string select(const std::string& path, int begin, int end)
+{
+  // set prefix (retains "/" if needed)
+  // - allocate
+  std::string prefix = "";
+  // - set
+  if ( path[0] == sep[0] ) prefix = "/";
+
+  return prefix + join(split(path,begin,end));
 }
 
 // -------------------------------------------------------------------------------------------------
