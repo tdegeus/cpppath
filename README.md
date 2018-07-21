@@ -1,6 +1,6 @@
 # cpppath
 
-Simple, header only, file-path module for C++. 
+Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy and currently only suitable for Linux and macOS. But is might be helpful to accomplish some simple tasks. 
 
 ## Contents
 
@@ -59,7 +59,7 @@ Return the filename from the `path`. Depending on the path, an empty string may 
 ### cpppath::exists
 
 ```cpp
-bool exists(const std::string& path);
+bool exists(const std::string &path);
 ```
 
 Return `true` is the `path` exists.
@@ -67,8 +67,8 @@ Return `true` is the `path` exists.
 ### cpppath::split
 
 ```cpp
-std::vector<std::string> split(const std::string& path);
-std::vector<std::string> split(const std::string& path, int start, int end);
+std::vector<std::string> split(const std::string &path);
+std::vector<std::string> split(const std::string &path, int start, int end);
 ```
 
 Split sub-paths using the separator. The output is a list of path components. Optionally a subset of the list can be selected using the `start` and `end` indices. Negative indices may be used to that count from the right (instead of from the left).
@@ -85,7 +85,7 @@ Join path components using separator.
 ### cpppath::select
 
 ```cpp
-std::string select(const std::string& path, int start, int end);
+std::string select(const std::string &path, int start, int end);
 ```
 
 Selection of sub-paths (see `split`). Negative indices may be used to that count from the right (instead of from the left).
@@ -116,28 +116,13 @@ cmake /path/to/cpppath
 make install
 ```
 
-Thereafter one usually does not have to specify any include path. 
-
-> To install in a custom location (e.g. `~/opt`) use
-> 
-> ```bash
-> cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~/opt
-> ```
-> 
-> To avoid having to specify the include path one can set the following environment variables:
-> 
-> ```bash
-> export CPLUS_INCLUDE_PATH=$HOME/opt/include:$CPLUS_INCLUDE_PATH
-> ```
-> Usually one adds this line to the `~/.bashrc` (or its equivalent), see for example [this page](https://www.cyberciti.biz/faq/set-environment-variable-linux/).
-
-Should this not work, one can use
+Thereafter one usually does not have to specify any include path. If needed, one can use
 
 ```bash
 c++ `pkg-config --cflags cpppath`
 ```
 
-Or using CMake, add the following to your `CMakeLists.txt`:
+or use CMake, by adding the following to your `CMakeLists.txt`:
 
 ```cmake
 find_package(PkgConfig)
@@ -146,4 +131,9 @@ pkg_check_modules(CPPPATH REQUIRED cpppath)
 include_directories(${CPPPATH_INCLUDE_DIRS})
 ```
 
+> To install in a custom location (e.g. `~/opt`) use
+> 
+> ```bash
+> cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~/opt
+> ```
 
