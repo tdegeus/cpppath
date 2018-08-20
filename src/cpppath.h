@@ -43,26 +43,22 @@ namespace cpppath {
 
 // =========================================== OVERVIEW ============================================
 
-// path-separator
-const std::string sep = "/";
-
 // get dirname/filename part of a path
-inline std::string dirname (const std::string &path);
-inline std::string filename(const std::string &path);
+inline std::string dirname (const std::string &path, const std::string &sep="/");
+inline std::string filename(const std::string &path, const std::string &sep="/");
 
 // join sub-paths together using the separator
-inline std::string join(const std::vector<std::string> &paths);
-inline std::string join(const std::string &a, const std::string &b);
+inline std::string join(const std::vector<std::string> &paths, const std::string &sep="/");
 
 // split sub-paths using the separator (N.B. if "end==0" the upper bound in the last index)
-inline std::vector<std::string> split(const std::string& path);
-inline std::vector<std::string> split(const std::string& path, int start, int end=0);
+inline std::vector<std::string> split(const std::string& path                      , const std::string &sep="/");
+inline std::vector<std::string> split(const std::string& path, int start, int end=0, const std::string &sep="/");
 
 // select path of a path
-inline std::string select(const std::string& path, int start, int end=0);
+inline std::string select(const std::string& path, int start, int end=0, const std::string &sep="/");
 
 // normalize a path by collapsing redundant separators and up-level references
-inline std::string normpath(const std::string &path);
+inline std::string normpath(const std::string &path, const std::string &sep="/");
 
 // the current working directory
 inline std::string curdir();
@@ -74,7 +70,7 @@ inline bool exists(const std::string& path);
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string dirname(const std::string &path)
+inline std::string dirname(const std::string &path, const std::string &sep)
 {
   size_t idx = path.find_last_of(sep);
 
@@ -85,7 +81,7 @@ inline std::string dirname(const std::string &path)
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string filename(const std::string &path)
+inline std::string filename(const std::string &path, const std::string &sep)
 {
   size_t idx = path.find_last_of(sep);
 
@@ -96,7 +92,7 @@ inline std::string filename(const std::string &path)
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string join(const std::vector<std::string> &paths)
+inline std::string join(const std::vector<std::string> &paths, const std::string &sep)
 {
   if ( paths.size() == 1 ) return paths[0];
 
@@ -120,14 +116,7 @@ inline std::string join(const std::vector<std::string> &paths)
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string join(const std::string &a, const std::string &b)
-{
-  return join({a,b});
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline std::vector<std::string> split(const std::string& path)
+inline std::vector<std::string> split(const std::string& path, const std::string &sep)
 {
   // allocate output
   std::vector<std::string> out;
@@ -161,7 +150,7 @@ inline std::vector<std::string> split(const std::string& path)
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::vector<std::string> split(const std::string& path, int begin, int end)
+inline std::vector<std::string> split(const std::string& path, int begin, int end, const std::string &sep)
 {
   // list of path components
   std::vector<std::string> paths = split(path);
@@ -187,7 +176,7 @@ inline std::vector<std::string> split(const std::string& path, int begin, int en
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string select(const std::string& path, int begin, int end)
+inline std::string select(const std::string& path, int begin, int end, const std::string &sep)
 {
   // set prefix (retains "/" if needed)
   // - allocate
@@ -200,7 +189,7 @@ inline std::string select(const std::string& path, int begin, int end)
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string normpath(const std::string &path)
+inline std::string normpath(const std::string &path, const std::string &sep)
 {
   // retain "/" prefix
   bool root = path[0] == sep[0];
