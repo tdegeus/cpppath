@@ -13,10 +13,10 @@ include(GNUInstallDirs)
 project(cpppath)
 
 # file that contains the version information
-set(parse_version src/${PROJECT_NAME}.h)
+set(parse_version include/${PROJECT_NAME}.h)
 
 # header files
-set(headers src/${PROJECT_NAME}.h)
+set(headers include/${PROJECT_NAME}.h)
 
 # automatically parse the version number
 file(READ "${parse_version}" version)
