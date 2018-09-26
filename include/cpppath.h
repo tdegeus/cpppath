@@ -49,6 +49,7 @@ inline std::string filename(const std::string &path, const std::string &sep="/")
 
 // join sub-paths together using the separator
 inline std::string join(const std::vector<std::string> &paths, const std::string &sep="/");
+inline std::string join(const std::vector<std::string> &paths, bool preprend, const std::string &sep="/");
 
 // split sub-paths using the separator (N.B. if "end==0" the upper bound in the last index)
 inline std::vector<std::string> split(const std::string& path                      , const std::string &sep="/");
@@ -112,6 +113,15 @@ inline std::string join(const std::vector<std::string> &paths, const std::string
   }
 
   return out;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string join(const std::vector<std::string> &paths, bool preprend, const std::string &sep)
+{
+  if ( preprend ) return sep + join(paths, sep);
+
+  return join(paths, sep);
 }
 
 // -------------------------------------------------------------------------------------------------
