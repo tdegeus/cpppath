@@ -46,6 +46,7 @@ namespace cpppath {
 // get dirname/filename part of a path
 inline std::string dirname (const std::string &path, const std::string &sep="/");
 inline std::string filename(const std::string &path, const std::string &sep="/");
+inline std::string filebase(const std::string &path, const std::string &sep="/", const std::string &ext=".");
 
 // join sub-paths together using the separator
 inline std::string join(const std::vector<std::string> &paths,                const std::string &sep="/");
@@ -91,6 +92,19 @@ inline std::string filename(const std::string &path, const std::string &sep)
   if ( idx == std::string::npos ) return path;
 
   return path.substr(idx+1, path.length());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string filebase(const std::string &path, const std::string &sep, const std::string &ext)
+{
+  std::string out = filename(path, sep);
+
+  size_t idx = out.find_first_of(ext);
+
+  if ( idx == std::string::npos ) return out;
+
+  return out.substr(0, idx);
 }
 
 // -------------------------------------------------------------------------------------------------

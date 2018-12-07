@@ -10,6 +10,7 @@ Simple, header only, file-path module for C++ similar to `os` in Python. This mo
 - [Overview](#overview)
     - [cpppath::dirname](#cpppathdirname)
     - [cpppath::filename](#cpppathfilename)
+    - [cpppath::filebase](#cpppathfilebase)
     - [cpppath::exists](#cpppathexists)
     - [cpppath::split](#cpppathsplit)
     - [cpppath::join](#cpppathjoin)
@@ -55,6 +56,14 @@ std::string filename(const std::string &path);
 ```
 
 Return the filename from the `path`. Depending on the path, an empty string may be returned.
+
+### cpppath::filebase
+
+```cpp
+std::string filebase(const std::string &path);
+```
+
+Return the filename *without extension* from the `path`. Depending on the path, an empty string may be returned.
 
 ### cpppath::exists
 
