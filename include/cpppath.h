@@ -25,7 +25,7 @@
 
 #define CPPPATH_WORLD_VERSION 0
 #define CPPPATH_MAJOR_VERSION 0
-#define CPPPATH_MINOR_VERSION 6
+#define CPPPATH_MINOR_VERSION 7
 
 #define CPPPATH_VERSION_AT_LEAST(x,y,z) \
   (CPPPATH_WORLD_VERSION>x || (CPPPATH_WORLD_VERSION>=x && \
@@ -63,6 +63,12 @@ inline std::string select(const std::string& path, int start, int end=0, const s
 
 // normalize a path by collapsing redundant separators and up-level references
 inline std::string normpath(const std::string &path, const std::string &sep="/");
+
+// common prefix in a list of strings
+inline std::string common_prefix(const std::vector<std::string> &paths);
+
+// common dirname in a list of paths
+inline std::string common_dirname(const std::vector<std::string> &paths);
 
 // the current working directory
 inline std::string curdir();
@@ -283,6 +289,52 @@ inline std::string normpath(const std::string &path, const std::string &sep)
   // return path
   if ( root ) return sep+join(paths, sep);
   else        return     join(paths, sep);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+namespace detail
+{
+  bool all_equal(const std::vector<std::string> &paths, size_t i)
+  {
+    for ( size_t j = 1 ; j < paths.size() ; ++j )
+      if ( paths[0][i] != paths[j][i] )
+        return false;
+
+    return true;
+  }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string common_prefix(const std::vector<std::string> &paths)
+{
+  if ( paths.size() == 0 )
+    return "";
+
+  size_t i;
+  size_t n = paths[0].size();
+
+  for ( auto &path: paths )
+    if ( path.size() < n )
+      n = path.size();
+
+  for ( i = 0 ; i < n ; ++i )
+  {
+    if ( detail::all_equal(paths, i) )
+      ++i;
+    else
+      break;
+  }
+
+  return paths[0].substr(0, i);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string common_dirname(const std::vector<std::string> &paths)
+{
+  return dirname(common_prefix(paths));
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -11,11 +11,13 @@ Simple, header only, file-path module for C++ similar to `os` in Python. This mo
     - [cpppath::dirname](#cpppathdirname)
     - [cpppath::filename](#cpppathfilename)
     - [cpppath::filebase](#cpppathfilebase)
-    - [cpppath::exists](#cpppathexists)
     - [cpppath::split](#cpppathsplit)
     - [cpppath::join](#cpppathjoin)
     - [cpppath::select](#cpppathselect)
     - [cpppath::normpath](#cpppathnormpath)
+    - [cpppath::common_prefix](#cpppathcommon_prefix)
+    - [cpppath::common_dirname](#cpppathcommon_dirname)
+    - [cpppath::exists](#cpppathexists)
     - [cpppath::curdir](#cpppathcurdir)
 - [Installation](#installation)
 
@@ -65,14 +67,6 @@ std::string filebase(const std::string &path);
 
 Return the filename *without extension* from the `path`. Depending on the path, an empty string may be returned.
 
-### cpppath::exists
-
-```cpp
-bool exists(const std::string &path);
-```
-
-Return `true` is the `path` exists.
-
 ### cpppath::split
 
 ```cpp
@@ -106,6 +100,56 @@ std::string normpath(const std::string &path);
 ```
 
 Normalize a path by collapsing redundant separators and up-level references so that `A//B`, `A/B/`, `A/./B` and `A/foo/../B` all become `A/B`. This string manipulation may change the meaning of a path that contains symbolic links.
+
+### cpppath::common_prefix
+
+```cpp
+std::string common_prefix(const std::vector<std::string> &paths);
+```
+
+Select the common part of a list of strings. For example
+
+```cpp
+std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
+
+  std::cout << cpppath::common_prefix(paths) << std::endl;
+```
+
+returns `"/path/to/id=00"`.
+
+### cpppath::common_dirname
+
+```cpp
+std::string common_dirname(const std::vector<std::string> &paths);
+```
+
+Select the common path of a list of paths. For example
+
+```cpp
+std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
+
+std::cout << cpppath::common_dirname(paths) << std::endl;
+```
+
+returns `"/path/to"`.
+
+This can also be used to select the part of the paths that in unique to each string. For example:
+
+```cpp
+std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
+
+std::cout << cpppath::split(paths[0], cpppath::common_dirname(paths)+"/")[0] << std::endl;
+```
+
+returns `"id=000/file.txt"`.
+
+### cpppath::exists
+
+```cpp
+bool exists(const std::string &path);
+```
+
+Return `true` is the `path` exists.
 
 ### cpppath::curdir
 
