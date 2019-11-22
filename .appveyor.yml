@@ -40,4 +40,4 @@ install:
 
 build_script:
   # Run tests
-    - ./test/main
+    - .\test\main

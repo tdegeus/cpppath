@@ -81,9 +81,9 @@ install:
     - conda update -q conda
     - conda install catch2 -c conda-forge
     # Install library
-    - cmake . -DBUILD_TESTS=ON -DCMAKE_INSTALL_PREFIX:PATH="${CONDA_PREFIX}"
+    - cmake . -DBUILD_TESTS=ON
     - make
-    - make install
+    - sudo make install
 script:
     # Run tests
     - ./test/main
