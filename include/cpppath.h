@@ -7,15 +7,9 @@
 #ifndef CPPPATH_H
 #define CPPPATH_H
 
-#include <assert.h>
-#include <iostream>
-#include <fstream>
-#include <cstring>
 #include <string>
 #include <vector>
-#include <tuple>
-#include <stdio.h>
-#include <unistd.h>
+#include <fstream>
 
 #define CPPPATH_VERSION_MAJOR 0
 #define CPPPATH_VERSION_MINOR 1
