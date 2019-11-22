@@ -1,104 +1,110 @@
 
-# required to specify the c++ standard
 cmake_minimum_required(VERSION 3.0)
 
-# required for install
+# Options
+# =======
+
+project(cpppath)
+
+option(BUILD_TESTS "${PROJECT_NAME} Build tests" OFF)
+
+# Internals
+# =========
+
+set(CPPPATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Version
+# =======
+
+file(
+    STRINGS "${CPPPATH_INCLUDE_DIR}/cpppath.h" cpppath_version_defines
+    REGEX "#define CPPPATH_VERSION_(MAJOR|MINOR|PATCH)")
+
+foreach(ver ${cpppath_version_defines})
+    if(ver MATCHES "#define CPPPATH_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
+        set(CPPPATH_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
+    endif()
+endforeach()
+
+set(CPPPATH_VERSION
+    ${CPPPATH_VERSION_MAJOR}.${CPPPATH_VERSION_MINOR}.${CPPPATH_VERSION_PATCH})
+
+message(STATUS "Building cpppath v${CPPPATH_VERSION}")
+
+# Build
+# =====
+
+set(CPPPATH_HEADERS
+    ${CPPPATH_INCLUDE_DIR}/cpppath.h)
+
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(
+    ${PROJECT_NAME} INTERFACE
+    $<BUILD_INTERFACE:${CPPPATH_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+
+# Installation
+# ============
+
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-# project settings
-# ----------------
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets)
 
-# name
-project(cpppath)
+export(
+    EXPORT ${PROJECT_NAME}-targets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
-# file that contains the version information
-set(parse_version include/${PROJECT_NAME}.h)
+install(
+    FILES ${CPPPATH_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-# header files
-set(headers include/${PROJECT_NAME}.h)
-
-# automatically parse the version number
-file(READ "${parse_version}" version)
-string(REGEX MATCH "define[ \t]+CPPPATH_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(world_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+CPPPATH_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(major_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+CPPPATH_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(minor_version "${CMAKE_MATCH_1}")
-set(CPPPATH_VERSION_NUMBER ${world_version}.${major_version}.${minor_version})
-
-# paths
-# -----
-
-set(CPPPATH_ROOT_DIR         "${CMAKE_INSTALL_PREFIX}")
-set(CPPPATH_INCLUDE_DIR      "${CMAKE_INSTALL_INCLUDEDIR}")
-set(INCLUDE_INSTALL_DIR      "${CMAKE_INSTALL_INCLUDEDIR}")
-set(CMAKEPACKAGE_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-set(PKGCONFIG_INSTALL_DIR    "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-set(fcmake                   "${PROJECT_NAME}Config.cmake")
-set(fpkg                     "${PROJECT_NAME}.pc")
-
-# options
-# -------
-
-# configure pkg-config (default: on)
-option(PKGCONFIG "Build pkg-config ${fpkg} file" ON)
-
-# disable pkg-config for native Windows builds
-if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
-  option(PKGCONFIG "Build pkg-config ${fpkg} file" OFF)
-endif()
-
-# C++ standard
-# ------------
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-if(NOT CMAKE_CXX_STANDARD OR CMAKE_CXX_STANDARD LESS 14)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
-
-# configure CMake
-# ---------------
+set(CPPPATH_CMAKECONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+    STRING "install path for ${PROJECT_NAME}Config.cmake")
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  PATH_VARS CPPPATH_INCLUDE_DIR CPPPATH_ROOT_DIR
-  INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
-  NO_CHECK_REQUIRED_COMPONENTS_MACRO
-)
+    "cpppathConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${CPPPATH_CMAKECONFIG_INSTALL_DIR})
 
-# install
-# -------
+set(_CPPPATH_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
 
-# pkg-config
-if(PKGCONFIG)
-  configure_file(${fpkg}.in ${fpkg} @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fpkg} DESTINATION ${PKGCONFIG_INSTALL_DIR})
+unset(CMAKE_SIZEOF_VOID_P)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${CPPPATH_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+set(CMAKE_SIZEOF_VOID_P ${_CPPPATH_CMAKE_SIZEOF_VOID_P})
+
+install(
+    FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${CPPPATH_CMAKECONFIG_INSTALL_DIR})
+
+install(
+    EXPORT ${PROJECT_NAME}-targets
+    FILE "${PROJECT_NAME}Targets.cmake"
+    DESTINATION ${CPPPATH_CMAKECONFIG_INSTALL_DIR})
+
+configure_file(
+    "cpppath.pc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+     @ONLY)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+
+# Add builds
+# ==========
+
+if(BUILD_TESTS)
+    add_subdirectory(test)
 endif()
-
-# CMake
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fcmake} DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
-
-# header files
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${headers} DESTINATION ${INCLUDE_INSTALL_DIR})
-
-# print information to screen
-# ---------------------------
-
-message(STATUS "")
-message(STATUS "+---------------------------------------------------------------------------------")
-message(STATUS "|")
-message(STATUS "| Use 'make install' to install in")
-message(STATUS "|   ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "|")
-message(STATUS "| To specify a custom directory call")
-message(STATUS "|   cmake /path/to/${PROJECT_NAME} -DCMAKE_INSTALL_PREFIX=yourprefix")
-message(STATUS "|")
-message(STATUS "| For custom paths, add the following line to your '~/.bashrc'")
-message(STATUS "|   export PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/pkgconfig:$PKG_CONFIG_PATH")
-message(STATUS "|")
-message(STATUS "+---------------------------------------------------------------------------------")
-message(STATUS "")

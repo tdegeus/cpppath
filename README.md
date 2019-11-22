@@ -19,15 +19,18 @@ Simple, header only, file-path module for C++ similar to `os` in Python. This mo
 
 - [Usage](#usage)
 - [Overview](#overview)
+    - [cpppath::sep](#cpppathsep)
     - [cpppath::dirname](#cpppathdirname)
     - [cpppath::filename](#cpppathfilename)
     - [cpppath::filebase](#cpppathfilebase)
+    - [cpppath::splitext](#cpppathsplitext)
+    - [cpppath::ext](#cpppathext)
     - [cpppath::split](#cpppathsplit)
     - [cpppath::join](#cpppathjoin)
     - [cpppath::select](#cpppathselect)
     - [cpppath::normpath](#cpppathnormpath)
-    - [cpppath::common_prefix](#cpppathcommon_prefix)
-    - [cpppath::common_dirname](#cpppathcommon_dirname)
+    - [cpppath::commonprefix](#cpppathcommonprefix)
+    - [cpppath::commondirname](#cpppathcommondirname)
     - [cpppath::exists](#cpppathexists)
     - [cpppath::curdir](#cpppathcurdir)
 - [Installation](#installation)
@@ -54,54 +57,90 @@ The `-I/path/to/cpppath` can be simplified or often even omitted by ['installing
 
 The following functions are available:
 
+### cpppath::sep
+
+Get OS's separator.
+
+* Unix: "/"
+* Windows: "\\"
+
 ### cpppath::dirname
 
-Return the directory from the `path`. Depending on the path, an empty string may be returned.
+Get dirname part of a path. 
+Depending on the path, an empty string may be returned.
+
+Example: "/path/to/foo/bar.txt" returns "/path/to/foo"
 
 ### cpppath::filename
 
-Return the filename from the `path`. Depending on the path, an empty string may be returned.
+Get filename part of a path. 
+Depending on the path, an empty string may be returned.
+
+Example: "/path/to/foo/bar.txt" returns "bar.txt"
 
 ### cpppath::filebase
 
-Return the filename *without extension* from the `path`. Depending on the path, an empty string may be returned.
+Get filename part of a path, *without extension*.
+Depending on the path, an empty string may be returned.
+
+Example: "/path/to/foo/bar.txt" returns "bar"
+
+### cpppath::splitext
+
+Split the pathname path into a pair (root, ext) such that root + ext == path,
+and ext is empty or begins with a period and contains at most one period.
+Leading periods on the basename are ignored; splitext(".cshrc") returns {".cshrc", ""}.
+
+### cpppath::ext
+
+Get the extension of a path.
+Depending on the path, an empty string may be returned.
+
+Example: "/path/to/foo/bar.txt" returns "txt"
 
 ### cpppath::split
 
-Split sub-paths using the separator. The output is a list of path components. Optionally a subset of the list can be selected using the `start` and `end` indices. Negative indices may be used to that count from the right (instead of from the left).
+Split sub-paths using the separator. The output is a list of path components. 
+
+Optionally the list can be sliced as split(path)\[begin: end\]. Negative indices may be used to that count from the right (instead of from the left).
 
 ### cpppath::join
 
 Join path components using separator.
+Provides option to prepend the output string with the separator.
 
 ### cpppath::select
 
 Selection of sub-paths (see `split`). Negative indices may be used to that count from the right (instead of from the left).
 
+Example: select("/path/to/foo/bar.txt", 2) returns "foo/bar.txt"
+
+Example: select("/path/to/foo/bar.txt", 2, 3) returns "foo"
+
 ### cpppath::normpath
 
 Normalize a path by collapsing redundant separators and up-level references so that `A//B`, `A/B/`, `A/./B` and `A/foo/../B` all become `A/B`. This string manipulation may change the meaning of a path that contains symbolic links.
 
-### cpppath::common_prefix
+### cpppath::commonprefix
 
 Select the common part of a list of strings. For example:
 
 ```cpp
 std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
 
-  std::cout << cpppath::common_prefix(paths) << std::endl;
+  std::cout << cpppath::commonprefix(paths) << std::endl;
 ```
 
 returns `"/path/to/id=00"`.
 
-### cpppath::common_dirname
+### cpppath::commondirname
 
 Select the common path of a list of paths. For example:
 
 ```cpp
 std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
 
-std::cout << cpppath::common_dirname(paths) << std::endl;
+std::cout << cpppath::commondirname(paths) << std::endl;
 ```
 
 returns `"/path/to"`.
@@ -111,7 +150,7 @@ This can also be used to select the part of the paths that in unique to each str
 ```cpp
 std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
 
-std::cout << cpppath::split(paths[0], cpppath::common_dirname(paths)+"/")[0] << std::endl;
+std::cout << cpppath::split(paths[0], cpppath::commondirname(paths)+"/")[0] << std::endl;
 ```
 
 returns `"id=000/file.txt"`.

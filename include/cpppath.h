@@ -31,40 +31,75 @@
    CPPPATH_VERSION_MINOR == y && \
    CPPPATH_VERSION_PATCH == z)
 
+#ifdef _MSC_VER
+    #define CPPPATH_SEP "\\"
+#else
+    #define CPPPATH_SEP "/"
+#endif
+
 // =================================================================================================
 
 namespace cpppath {
 
 // =========================================== OVERVIEW ============================================
 
-// get dirname part of a path
+// Get OS's separator.
+// Unix: "/", Windows: "\\"
+
+inline std::string sep();
+
+// Get dirname part of a path.
+// Depending on the path, an empty string may be returned.
+// Example: "/path/to/foo/bar.txt" returns "/path/to/foo"
 
 inline std::string dirname(
     const std::string& path,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
-// get filename part of a path
+// Get filename part of a path.
+// Depending on the path, an empty string may be returned.
+// Example: "/path/to/foo/bar.txt" returns "bar.txt"
 
 inline std::string filename(
     const std::string& path,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
+
+// Get filename part of a path, without extension.
+// Depending on the path, an empty string may be returned.
+// Example: "/path/to/foo/bar.txt" returns "bar"
 
 inline std::string filebase(
     const std::string& path,
-    const std::string& sep="/",
-    const std::string& ext=".");
+    const std::string& sep=CPPPATH_SEP,
+    const std::string& extsep=".");
 
-// join sub-paths together using the separator
-// provides option to prepend the output string with the separator
+// Split the pathname path into a pair (root, ext) such that root + ext == path,
+// and ext is empty or begins with a period and contains at most one period.
+// Leading periods on the basename are ignored; splitext(".cshrc") returns {".cshrc", ""}.
+
+inline std::vector<std::string> splitext(
+    const std::string& path,
+    const std::string& extsep=".");
+
+// Get the extension of a path.
+// Depending on the path, an empty string may be returned.
+// Example: "/path/to/foo/bar.txt" returns "txt"
+
+inline std::string ext(
+    const std::string& path,
+    const std::string& extsep=".");
+
+// Join sub-paths together using the separator.
+// Provides option to prepend the output string with the separator.
 
 inline std::string join(
     const std::vector<std::string>& paths,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
 inline std::string join(
     const std::vector<std::string>& paths,
     bool preprend,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
 inline std::string join(
     const std::vector<std::string>& paths,
@@ -75,63 +110,71 @@ inline std::string join(
     bool preprend,
     const char* sep);
 
-// split sub-paths using the separator (N.B. if "end == 0" the upper bound in the last index)
+// Split sub-paths using the separator.
+// Option: slice the output[start: end]
 
 inline std::vector<std::string> split(
     const std::string& path,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
 inline std::vector<std::string> split(
     const std::string& path,
     int start,
     int end=0,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
-// select path of a path
+// Select path of a path.
+// Example: select("/path/to/foo/bar.txt", 2) returns "foo/bar.txt"
+// Example: select("/path/to/foo/bar.txt", 2, 3) returns "foo"
 
 inline std::string select(
     const std::string& path,
     int start,
     int end=0,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
-// normalize a path by collapsing redundant separators and up-level references
+// Normalize a path by collapsing redundant separators and up-level references.
 
 inline std::string normpath(
     const std::string& path,
-    const std::string& sep="/");
+    const std::string& sep=CPPPATH_SEP);
 
-// common prefix in a list of strings
+// Select the common prefix in a list of strings.
 
-inline std::string common_prefix(
+inline std::string commonprefix(
     const std::vector<std::string>& paths);
 
-// common dirname in a list of paths
+// Select the common dirname in a list of paths.
 
-inline std::string common_dirname(
+inline std::string commondirname(
     const std::vector<std::string>& paths);
 
-// return the current working directory
+// Return the current working directory.
 
 inline std::string curdir();
 
-// check if a path exists
+// Check if a path exists.
 
 inline bool exists(
     const std::string& path);
 
 // ========================================= IMPLEMENATION =========================================
 
+inline std::string sep()
+{
+    return CPPPATH_SEP;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 inline std::string dirname(
     const std::string& path,
     const std::string& sep)
 {
   size_t idx = path.find_last_of(sep);
-
   if (idx == std::string::npos) {
       return "";
   }
-
   return path.substr(0, idx);
 }
 
@@ -142,11 +185,9 @@ inline std::string filename(
     const std::string& sep)
 {
     size_t idx = path.find_last_of(sep);
-
     if (idx == std::string::npos) {
         return path;
     }
-
     return path.substr(idx+1, path.length());
 }
 
@@ -155,17 +196,57 @@ inline std::string filename(
 inline std::string filebase(
     const std::string& path,
     const std::string& sep,
-    const std::string& ext)
+    const std::string& extsep)
 {
     std::string out = filename(path, sep);
+    return splitext(out, extsep)[0];
+}
 
-    size_t idx = out.find_first_of(ext);
+// -------------------------------------------------------------------------------------------------
 
-    if (idx == std::string::npos) {
-        return out;
+inline std::vector<std::string> splitext(
+    const std::string& path,
+    const std::string& extsep)
+{
+    std::string e = ext(path, extsep);
+    if (e.size() == 0) {
+        return {path, ""};
     }
+    return {path.substr(0, path.size() - e.size() - extsep.size()), e};
+}
 
-    return out.substr(0, idx);
+// -------------------------------------------------------------------------------------------------
+
+namespace detail
+{
+    inline bool all_extsep(const std::string& path, const std::string& extsep)
+    {
+        if (extsep.size() != 1) {
+            return false;
+        }
+        for (auto &i: path) {
+            if (i != extsep[0]) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+inline std::string ext(
+    const std::string& path,
+    const std::string& extsep)
+{
+    size_t idx = path.find_last_of(extsep);
+    if (idx == std::string::npos) {
+        return "";
+    }
+    if (detail::all_extsep(path.substr(0, idx), extsep)) {
+        return "";
+    }
+    return path.substr(idx + 1);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -211,7 +292,6 @@ inline std::string join(
     if (preprend) {
         return sep + join(paths, sep);
     }
-
     return join(paths, sep);
 }
 
@@ -318,11 +398,9 @@ inline std::string select(
     const std::string& sep)
 {
     std::string prefix = "";
-
     if (path[0] == sep[0]) {
-        prefix = "/";
+        prefix = sep;
     }
-
     return prefix + join(split(path, begin, end), sep);
 }
 
@@ -404,7 +482,7 @@ namespace detail
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string common_prefix(
+inline std::string commonprefix(
     const std::vector<std::string>& paths)
 {
     if (paths.size() == 0) {
@@ -434,10 +512,10 @@ inline std::string common_prefix(
 
 // -------------------------------------------------------------------------------------------------
 
-inline std::string common_dirname(
+inline std::string commondirname(
     const std::vector<std::string>& paths)
 {
-    return dirname(common_prefix(paths));
+    return dirname(commonprefix(paths));
 }
 
 // -------------------------------------------------------------------------------------------------
