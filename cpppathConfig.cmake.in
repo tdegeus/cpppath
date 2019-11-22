@@ -1,4 +1,13 @@
-set(CPPPATH_FOUND 1)
+# cpppath cmake module
+# This module sets the following variables:
+#
+#   cpppath_FOUND - true if cpppath found
+#   cpppath_INCLUDE_DIRS - the directory containing cpppath headers
+#   cpppath_LIBRARY - empty
 
-set(CPPPATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-set(CPPPATH_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+@PACKAGE_INIT@
+
+if(NOT TARGET @PROJECT_NAME@)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+  get_target_property(@PROJECT_NAME@_INCLUDE_DIRS @PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
+endif()

@@ -1,9 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=${prefix}
+includedir=${prefix}/include
 
-Name: cpppath
-Description: Simple file-path library
-Requires:
-Version: @CPPPATH_VERSION_NUMBER@
-Libs:
-Cflags: -I${prefix}/@CPPPATH_INCLUDE_DIR@
+Name: @PROJECT_NAME@
+Description: C++ path module like os.path for Python
+Version: @CPPPATH_VERSION@
+Cflags: -I${includedir}

@@ -1,29 +1,70 @@
 # cpppath
 
-Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy and currently only suitable for Linux and macOS. But is might be helpful to accomplish some simple tasks. 
+[![Travis](https://travis-ci.org/tdegeus/cpppath.svg?branch=master)](https://travis-ci.org/tdegeus/cpppath)
+[![Build status](https://ci.appveyor.com/api/projects/status/aw19lhd9x6oma9ob?svg=true)](https://ci.appveyor.com/project/tdegeus/cpppath)
+
+Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy, but it might be helpful to accomplish some simple tasks. 
+
+>   **Disclaimer**
+>   
+>   This library is free to use under the [MIT license](https://github.com/tdegeus/cpppath/blob/master/LICENSE). Any additions are very much appreciated, in terms of suggested functionality, code, documentation, testimonials, word-of-mouth advertisement, etc. Bug reports or feature requests can be filed on [GitHub](https://github.com/tdegeus/cpppath). As always, the code comes with no guarantee. None of the developers can be held responsible for possible mistakes.
+>   
+>   Download: [.zip file](https://github.com/tdegeus/cpppath/zipball/master) | [.tar.gz file](https://github.com/tdegeus/cpppath/tarball/master).
+>   
+>   (c - [MIT](https://github.com/tdegeus/cpppath/blob/master/LICENSE)) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | [github.com/tdegeus/cpppath](https://github.com/tdegeus/cpppath)
 
 ## Contents
 
 <!-- MarkdownTOC -->
 
+- [Getting cpppath](#getting-cpppath)
+    - [Using conda](#using-conda)
+    - [From source](#from-source)
 - [Usage](#usage)
+- [Compiling](#compiling)
+    - [By hand](#by-hand)
+    - [Using pkg-config](#using-pkg-config)
+    - [Using CMake](#using-cmake)
 - [Overview](#overview)
+    - [cpppath::sep](#cpppathsep)
     - [cpppath::dirname](#cpppathdirname)
     - [cpppath::filename](#cpppathfilename)
     - [cpppath::filebase](#cpppathfilebase)
+    - [cpppath::splitext](#cpppathsplitext)
+    - [cpppath::ext](#cpppathext)
     - [cpppath::split](#cpppathsplit)
     - [cpppath::join](#cpppathjoin)
     - [cpppath::select](#cpppathselect)
     - [cpppath::normpath](#cpppathnormpath)
-    - [cpppath::common_prefix](#cpppathcommon_prefix)
-    - [cpppath::common_dirname](#cpppathcommon_dirname)
+    - [cpppath::commonprefix](#cpppathcommonprefix)
+    - [cpppath::commondirname](#cpppathcommondirname)
     - [cpppath::exists](#cpppathexists)
     - [cpppath::curdir](#cpppathcurdir)
-- [Installation](#installation)
+- [Create a new release](#create-a-new-release)
 
 <!-- /MarkdownTOC -->
 
-## Usage
+# Getting cpppath
+
+## Using conda
+
+```bash
+conda install -c conda-forge cpppath
+```
+
+## From source
+
+```bash
+# Download cpppath
+git checkout https://github.com/tdegeus/cpppath.git
+cd cpppath
+
+# For CMake or pkg-config use
+cmake .
+make install
+```
+
+# Usage
 
 This library is header only, so one just has to
 
@@ -31,104 +72,153 @@ This library is header only, so one just has to
 #include <cpppath.h>
 ```
 
-Then compile using 
+and make sure that the header is in the include path of the compiler. See below.
+
+Consider this micro-example:
+
+```cpp
+#include <cpppath.h>
+
+int main()
+{
+    std::cout << cpppath::join({"path", "to", "foo", "bar.txt"}) << std::endl;
+    return 0;
+}
+```
+
+which will print 
+
+* Unix: `"path/to/foo/bar.txt"`
+* Windows: `"path\to\foo\bar.txt"`
+
+# Compiling
+
+## By hand
+
+Presuming that the compiler is `c++`, compile using:
+
+```
+c++ -I/path/to/cpppath/include ...
+```
+
+## Using pkg-config
+
+Presuming that the compiler is `c++`, compile using:
+
+```
+c++ `pkg-config --cflags cpppath` ...
+```
+
+## Using CMake
+
+The `CMakeLists.txt` can be as follows
+
+```cmake
+cmake_minimum_required(VERSION 3.1)
+
+project(example)
+
+find_package(cpppath REQUIRED)
+
+add_library(example main.cpp)
+
+target_link_libraries(example
+    cpppath)
+```
+
+Compilation (on Unix) can then proceed using 
 
 ```bash
-c++ -I/path/to/cpppath
+cmake .
+make
 ```
 
-The `-I/path/to/cpppath` can be simplified or often even omitted by ['installing' cpppath](#installation)
+# Overview
 
-## Overview
+## cpppath::sep
 
-The following functions are available:
+Get OS's separator.
 
-### cpppath::dirname
+* Unix: "/"
+* Windows: "\\"
 
-```cpp
-std::string dirname(const std::string &path);
-```
+## cpppath::dirname
 
-Return the directory from the `path`. Depending on the path, an empty string may be returned.
+Get dirname part of a path. 
+Depending on the path, an empty string may be returned.
 
-### cpppath::filename
+Example: "/path/to/foo/bar.txt" returns "/path/to/foo"
 
-```cpp
-std::string filename(const std::string &path);
-```
+## cpppath::filename
 
-Return the filename from the `path`. Depending on the path, an empty string may be returned.
+Get filename part of a path. 
+Depending on the path, an empty string may be returned.
 
-### cpppath::filebase
+Example: "/path/to/foo/bar.txt" returns "bar.txt"
 
-```cpp
-std::string filebase(const std::string &path);
-```
+## cpppath::filebase
 
-Return the filename *without extension* from the `path`. Depending on the path, an empty string may be returned.
+Get filename part of a path, *without extension*.
+Depending on the path, an empty string may be returned.
 
-### cpppath::split
+Example: "/path/to/foo/bar.txt" returns "bar"
 
-```cpp
-std::vector<std::string> split(const std::string &path);
-std::vector<std::string> split(const std::string &path, int start, int end);
-```
+## cpppath::splitext
 
-Split sub-paths using the separator. The output is a list of path components. Optionally a subset of the list can be selected using the `start` and `end` indices. Negative indices may be used to that count from the right (instead of from the left).
+Split the pathname path into a pair (root, ext) such that root + ext == path,
+and ext is empty or begins with a period and contains at most one period.
+Leading periods on the basename are ignored; splitext(".cshrc") returns {".cshrc", ""}.
 
-### cpppath::join
+## cpppath::ext
 
-```cpp
-std::string join(const std::vector<std::string> &paths);
-std::string join(const std::string &a, const std::string &b);
-```
+Get the extension of a path.
+Depending on the path, an empty string may be returned.
+
+Example: "/path/to/foo/bar.txt" returns "txt"
+
+## cpppath::split
+
+Split sub-paths using the separator. The output is a list of path components. 
+
+Optionally the list can be sliced as split(path)\[begin: end\]. Negative indices may be used to that count from the right (instead of from the left).
+
+## cpppath::join
 
 Join path components using separator.
+Provides option to prepend the output string with the separator.
 
-### cpppath::select
-
-```cpp
-std::string select(const std::string &path, int start, int end);
-```
+## cpppath::select
 
 Selection of sub-paths (see `split`). Negative indices may be used to that count from the right (instead of from the left).
 
-### cpppath::normpath
+Example: select("/path/to/foo/bar.txt", 2) returns "foo/bar.txt"
 
-```cpp
-std::string normpath(const std::string &path);
-```
+Example: select("/path/to/foo/bar.txt", 2, 3) returns "foo"
+
+## cpppath::normpath
 
 Normalize a path by collapsing redundant separators and up-level references so that `A//B`, `A/B/`, `A/./B` and `A/foo/../B` all become `A/B`. This string manipulation may change the meaning of a path that contains symbolic links.
 
-### cpppath::common_prefix
+## cpppath::commonprefix
 
-```cpp
-std::string common_prefix(const std::vector<std::string> &paths);
-```
-
-Select the common part of a list of strings. For example
+Select the common part of a list of strings. For example:
 
 ```cpp
 std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
 
-  std::cout << cpppath::common_prefix(paths) << std::endl;
+  std::cout << cpppath::commonprefix(paths) << std::endl;
 ```
 
 returns `"/path/to/id=00"`.
 
-### cpppath::common_dirname
+## cpppath::commondirname
 
-```cpp
-std::string common_dirname(const std::vector<std::string> &paths);
-```
-
-Select the common path of a list of paths. For example
+Select the common path of a list of paths. For example:
 
 ```cpp
 std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
 
-std::cout << cpppath::common_dirname(paths) << std::endl;
+std::cout << cpppath::commondirname(paths) << std::endl;
 ```
 
 returns `"/path/to"`.
@@ -138,55 +228,23 @@ This can also be used to select the part of the paths that in unique to each str
 ```cpp
 std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/file.txt"};
 
-std::cout << cpppath::split(paths[0], cpppath::common_dirname(paths)+"/")[0] << std::endl;
+std::cout << cpppath::split(paths[0], cpppath::commondirname(paths)+"/")[0] << std::endl;
 ```
 
 returns `"id=000/file.txt"`.
 
-### cpppath::exists
+## cpppath::exists
 
-```cpp
-bool exists(const std::string &path);
-```
+Returns `true` is the `path` exists.
 
-Return `true` is the `path` exists.
-
-### cpppath::curdir
-
-```cpp
-std::string curdir();
-```
+## cpppath::curdir
 
 The current working directory.
 
-## Installation
+# Create a new release
 
-To install:
+1.  Update the version number in `include/cpppath.h`. 
 
-```bash
-cd /path/to/temp_dir
-cmake /path/to/cpppath
-make install
-```
+2.  Upload the changes to GitHub and create a new release there (with the correct version number).
 
-Thereafter one usually does not have to specify any include path. If needed, one can use
-
-```bash
-c++ `pkg-config --cflags cpppath`
-```
-
-or use CMake, by adding the following to your `CMakeLists.txt`:
-
-```cmake
-find_package(PkgConfig)
-
-pkg_check_modules(CPPPATH REQUIRED cpppath)
-include_directories(${CPPPATH_INCLUDE_DIRS})
-```
-
-> To install in a custom location (e.g. `~/opt`) use
-> 
-> ```bash
-> cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~/opt
-> ```
-
+3.  Update the package at [conda-forge](https://github.com/conda-forge/cpppath-feedstock).
