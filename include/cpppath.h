@@ -525,7 +525,10 @@ inline std::string commondirname(
 inline std::string curdir()
 {
     char buff[FILENAME_MAX];
-    GetCurrentDir(buff, FILENAME_MAX);
+    char* out = GetCurrentDir(buff, FILENAME_MAX);
+    if (out == NULL) {
+        throw std::runtime_error("getcwd failed");
+    }
     std::string cwd(buff);
     return cwd;
 }
