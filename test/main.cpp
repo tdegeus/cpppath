@@ -10,7 +10,7 @@ TEST_CASE("cpppath", "cpppath.h")
 
 SECTION("ext")
 {
-    REQUIRE(cpppath::ext("/path/to/foo/bar.txt") == "txt");
+    REQUIRE(cpppath::ext(cpppath::join({"path", "to", "foo", "bar.txt"})) == "txt");
     REQUIRE(cpppath::ext("bar.txt") == "txt");
     REQUIRE(cpppath::ext(".bashrc.txt") == "txt");
     REQUIRE(cpppath::ext(".bashrc") == "");
@@ -21,7 +21,9 @@ SECTION("ext")
 
 SECTION("splitext")
 {
-    REQUIRE(cpppath::splitext("/path/bar.txt") == std::vector<std::string>{"/path/bar", "txt"});
+    std::string path = cpppath::join({"path", "bar"});
+    std::string ext = "txt";
+    REQUIRE(cpppath::splitext(path + "." + ext) == std::vector<std::string>{path, ext});
     REQUIRE(cpppath::splitext("bar.txt") == std::vector<std::string>{"bar", "txt"});
     REQUIRE(cpppath::splitext(".bashrc.txt") == std::vector<std::string>{".bashrc", "txt"});
     REQUIRE(cpppath::splitext(".bashrc") == std::vector<std::string>{".bashrc", ""});
@@ -32,7 +34,7 @@ SECTION("splitext")
 
 SECTION("filebase")
 {
-    REQUIRE(cpppath::filebase("/path/to/foo/bar.txt") == "bar");
+    REQUIRE(cpppath::filebase(cpppath::join({"path", "to", "foo", "bar.txt"})) == "bar");
     REQUIRE(cpppath::filebase("bar.txt") == "bar");
     REQUIRE(cpppath::filebase(".bashrc.txt") == ".bashrc");
     REQUIRE(cpppath::filebase(".bashrc") == ".bashrc");
@@ -53,7 +55,7 @@ SECTION("split/join")
 SECTION("split")
 {
     std::vector<std::string> list = {"path", "to"};
-    size_t n = list.size();
+    int n = (int)list.size();
     std::vector<std::string> post = {"foo", "bar.txt"};
     list.insert(list.end(), post.begin(), post.end() );
     REQUIRE(cpppath::split(cpppath::join(list), n) == post);
@@ -67,7 +69,7 @@ SECTION("split")
 SECTION("select")
 {
     std::vector<std::string> list = {"path", "to"};
-    size_t n = list.size();
+    int n = (int)list.size();
     std::vector<std::string> post = {"foo", "bar.txt"};
     list.insert(list.end(), post.begin(), post.end() );
     REQUIRE(cpppath::select(cpppath::join(list), n) == cpppath::join(post));
