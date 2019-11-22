@@ -11,6 +11,16 @@
 #include <vector>
 #include <fstream>
 
+#ifdef WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+
+#endif
+
 #define CPPPATH_VERSION_MAJOR 0
 #define CPPPATH_VERSION_MINOR 1
 #define CPPPATH_VERSION_PATCH 0
@@ -25,7 +35,7 @@
    CPPPATH_VERSION_MINOR == y && \
    CPPPATH_VERSION_PATCH == z)
 
-#ifdef _MSC_VER
+#ifdef WINDOWS
     #define CPPPATH_SEP "\\"
 #else
     #define CPPPATH_SEP "/"
@@ -517,7 +527,7 @@ inline std::string commondirname(
 inline std::string curdir()
 {
     char buff[FILENAME_MAX];
-    getcwd(buff, FILENAME_MAX);
+    GetCurrentDir(buff, FILENAME_MAX);
     std::string cwd(buff);
     return cwd;
 }
