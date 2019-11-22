@@ -17,7 +17,14 @@ Simple, header only, file-path module for C++ similar to `os` in Python. This mo
 
 <!-- MarkdownTOC -->
 
+- [Getting cpppath](#getting-cpppath)
+    - [Using conda](#using-conda)
+    - [From source](#from-source)
 - [Usage](#usage)
+- [Compiling](#compiling)
+    - [By hand](#by-hand)
+    - [Using pkg-config](#using-pkg-config)
+    - [Using CMake](#using-cmake)
 - [Overview](#overview)
     - [cpppath::sep](#cpppathsep)
     - [cpppath::dirname](#cpppathdirname)
@@ -33,11 +40,31 @@ Simple, header only, file-path module for C++ similar to `os` in Python. This mo
     - [cpppath::commondirname](#cpppathcommondirname)
     - [cpppath::exists](#cpppathexists)
     - [cpppath::curdir](#cpppathcurdir)
-- [Installation](#installation)
+- [Create a new release](#create-a-new-release)
 
 <!-- /MarkdownTOC -->
 
-## Usage
+# Getting cpppath
+
+## Using conda
+
+```bash
+conda install -c conda-forge cpppath
+```
+
+## From source
+
+```bash
+# Download cpppath
+git checkout https://github.com/tdegeus/cpppath.git
+cd cpppath
+
+# For CMake or pkg-config use
+cmake .
+make install
+```
+
+# Usage
 
 This library is header only, so one just has to
 
@@ -45,71 +72,122 @@ This library is header only, so one just has to
 #include <cpppath.h>
 ```
 
-Then compile using 
+and make sure that the header is in the include path of the compiler. See below.
 
-```bash
-c++ -I/path/to/cpppath
+Consider this micro-example:
+
+```cpp
+#include <cpppath.h>
+
+int main()
+{
+    std::cout << cpppath::join({"path", "to", "foo", "bar.txt"}) << std::endl;
+    return 0;
+}
 ```
 
-The `-I/path/to/cpppath` can be simplified or often even omitted by ['installing' cpppath](#installation)
+which will print 
 
-## Overview
+* Unix: `"path/to/foo/bar.txt"`
+* Windows: `"path\to\foo\bar.txt"`
 
-The following functions are available:
+# Compiling
 
-### cpppath::sep
+## By hand
+
+Presuming that the compiler is `c++`, compile using:
+
+```
+c++ -I/path/to/cpppath/include ...
+```
+
+## Using pkg-config
+
+Presuming that the compiler is `c++`, compile using:
+
+```
+c++ `pkg-config --cflags cpppath` ...
+```
+
+## Using CMake
+
+The `CMakeLists.txt` can be as follows
+
+```cmake
+cmake_minimum_required(VERSION 3.1)
+
+project(example)
+
+find_package(cpppath REQUIRED)
+
+add_library(example main.cpp)
+
+target_link_libraries(example
+    cpppath)
+```
+
+Compilation (on Unix) can then proceed using 
+
+```bash
+cmake .
+make
+```
+
+# Overview
+
+## cpppath::sep
 
 Get OS's separator.
 
 * Unix: "/"
 * Windows: "\\"
 
-### cpppath::dirname
+## cpppath::dirname
 
 Get dirname part of a path. 
 Depending on the path, an empty string may be returned.
 
 Example: "/path/to/foo/bar.txt" returns "/path/to/foo"
 
-### cpppath::filename
+## cpppath::filename
 
 Get filename part of a path. 
 Depending on the path, an empty string may be returned.
 
 Example: "/path/to/foo/bar.txt" returns "bar.txt"
 
-### cpppath::filebase
+## cpppath::filebase
 
 Get filename part of a path, *without extension*.
 Depending on the path, an empty string may be returned.
 
 Example: "/path/to/foo/bar.txt" returns "bar"
 
-### cpppath::splitext
+## cpppath::splitext
 
 Split the pathname path into a pair (root, ext) such that root + ext == path,
 and ext is empty or begins with a period and contains at most one period.
 Leading periods on the basename are ignored; splitext(".cshrc") returns {".cshrc", ""}.
 
-### cpppath::ext
+## cpppath::ext
 
 Get the extension of a path.
 Depending on the path, an empty string may be returned.
 
 Example: "/path/to/foo/bar.txt" returns "txt"
 
-### cpppath::split
+## cpppath::split
 
 Split sub-paths using the separator. The output is a list of path components. 
 
 Optionally the list can be sliced as split(path)\[begin: end\]. Negative indices may be used to that count from the right (instead of from the left).
 
-### cpppath::join
+## cpppath::join
 
 Join path components using separator.
 Provides option to prepend the output string with the separator.
 
-### cpppath::select
+## cpppath::select
 
 Selection of sub-paths (see `split`). Negative indices may be used to that count from the right (instead of from the left).
 
@@ -117,11 +195,11 @@ Example: select("/path/to/foo/bar.txt", 2) returns "foo/bar.txt"
 
 Example: select("/path/to/foo/bar.txt", 2, 3) returns "foo"
 
-### cpppath::normpath
+## cpppath::normpath
 
 Normalize a path by collapsing redundant separators and up-level references so that `A//B`, `A/B/`, `A/./B` and `A/foo/../B` all become `A/B`. This string manipulation may change the meaning of a path that contains symbolic links.
 
-### cpppath::commonprefix
+## cpppath::commonprefix
 
 Select the common part of a list of strings. For example:
 
@@ -133,7 +211,7 @@ std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/f
 
 returns `"/path/to/id=00"`.
 
-### cpppath::commondirname
+## cpppath::commondirname
 
 Select the common path of a list of paths. For example:
 
@@ -155,42 +233,18 @@ std::cout << cpppath::split(paths[0], cpppath::commondirname(paths)+"/")[0] << s
 
 returns `"id=000/file.txt"`.
 
-### cpppath::exists
+## cpppath::exists
 
 Returns `true` is the `path` exists.
 
-### cpppath::curdir
+## cpppath::curdir
 
 The current working directory.
 
-## Installation
+# Create a new release
 
-To install:
+1.  Update the version number in `include/cpppath.h`. 
 
-```bash
-cd /path/to/temp_dir
-cmake /path/to/cpppath
-make install
-```
+2.  Upload the changes to GitHub and create a new release there (with the correct version number).
 
-Thereafter one usually does not have to specify any include path. If needed, one can use
-
-```bash
-c++ `pkg-config --cflags cpppath`
-```
-
-or use CMake, by adding the following to your `CMakeLists.txt`:
-
-```cmake
-find_package(PkgConfig)
-
-pkg_check_modules(CPPPATH REQUIRED cpppath)
-include_directories(${CPPPATH_INCLUDE_DIRS})
-```
-
-> To install in a custom location (e.g. `~/opt`) use
-> 
-> ```bash
-> cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~/opt
-> ```
-
+3.  Update the package at [conda-forge](https://github.com/conda-forge/cpppath-feedstock).
