@@ -34,7 +34,7 @@ install:
   - conda info -a
   - conda install catch2 -c conda-forge
   # Install library
-  - cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DCMAKE_BUILD_TYPE=RELEASE .
+  - cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_TESTS=ON .
   - nmake
   - nmake install
 
