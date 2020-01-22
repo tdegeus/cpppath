@@ -2,6 +2,7 @@
 
 [![Travis](https://travis-ci.org/tdegeus/cpppath.svg?branch=master)](https://travis-ci.org/tdegeus/cpppath)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/aw19lhd9x6oma9ob?svg=true)](https://ci.appveyor.com/project/tdegeus/cpppath)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/cpppath.svg)](https://anaconda.org/conda-forge/cpppath)
 
 Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy, but it might be helpful to accomplish some simple tasks. 
 
