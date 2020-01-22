@@ -113,7 +113,7 @@ inline std::string join(
     const char* sep);
 
 // Split sub-paths using the separator.
-// Option: slice the output[start: end]
+// Option: slice the output[begin: end]
 
 inline std::vector<std::string> split(
     const std::string& path,
@@ -121,7 +121,7 @@ inline std::vector<std::string> split(
 
 inline std::vector<std::string> split(
     const std::string& path,
-    int start,
+    int begin,
     int end=0,
     const std::string& sep=CPPPATH_SEP);
 
@@ -131,7 +131,7 @@ inline std::vector<std::string> split(
 
 inline std::string select(
     const std::string& path,
-    int start,
+    int begin,
     int end=0,
     const std::string& sep=CPPPATH_SEP);
 
