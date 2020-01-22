@@ -20,8 +20,8 @@
 #endif
 
 #define CPPPATH_VERSION_MAJOR 0
-#define CPPPATH_VERSION_MINOR 1
-#define CPPPATH_VERSION_PATCH 1
+#define CPPPATH_VERSION_MINOR 2
+#define CPPPATH_VERSION_PATCH 0
 
 #define CPPPATH_VERSION_AT_LEAST(x,y,z) \
   (CPPPATH_VERSION_MAJOR > x || (CPPPATH_VERSION_MAJOR >= x && \
@@ -33,10 +33,12 @@
    CPPPATH_VERSION_MINOR == y && \
    CPPPATH_VERSION_PATCH == z)
 
-#ifdef _MSC_VER
-    #define CPPPATH_SEP "\\"
-#else
-    #define CPPPATH_SEP "/"
+#ifndef CPPPATH_SEP
+    #ifdef _MSC_VER
+        #define CPPPATH_SEP "\\"
+    #else
+        #define CPPPATH_SEP "/"
+    #endif
 #endif
 
 // =================================================================================================
@@ -113,7 +115,7 @@ inline std::string join(
     const char* sep);
 
 // Split sub-paths using the separator.
-// Option: slice the output[start: end]
+// Option: slice the output[begin: end]
 
 inline std::vector<std::string> split(
     const std::string& path,
@@ -121,7 +123,7 @@ inline std::vector<std::string> split(
 
 inline std::vector<std::string> split(
     const std::string& path,
-    int start,
+    int begin,
     int end=0,
     const std::string& sep=CPPPATH_SEP);
 
@@ -131,7 +133,7 @@ inline std::vector<std::string> split(
 
 inline std::string select(
     const std::string& path,
-    int start,
+    int begin,
     int end=0,
     const std::string& sep=CPPPATH_SEP);
 
