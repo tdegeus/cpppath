@@ -1,22 +1,15 @@
 # cpppath
 
 [![Travis](https://travis-ci.org/tdegeus/cpppath.svg?branch=master)](https://travis-ci.org/tdegeus/cpppath)
-[![Build status](https://ci.appveyor.com/api/projects/status/aw19lhd9x6oma9ob?svg=true)](https://ci.appveyor.com/project/tdegeus/cpppath)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/aw19lhd9x6oma9ob?svg=true)](https://ci.appveyor.com/project/tdegeus/cpppath)
 
 Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy, but it might be helpful to accomplish some simple tasks. 
-
->   **Disclaimer**
->   
->   This library is free to use under the [MIT license](https://github.com/tdegeus/cpppath/blob/master/LICENSE). Any additions are very much appreciated, in terms of suggested functionality, code, documentation, testimonials, word-of-mouth advertisement, etc. Bug reports or feature requests can be filed on [GitHub](https://github.com/tdegeus/cpppath). As always, the code comes with no guarantee. None of the developers can be held responsible for possible mistakes.
->   
->   Download: [.zip file](https://github.com/tdegeus/cpppath/zipball/master) | [.tar.gz file](https://github.com/tdegeus/cpppath/tarball/master).
->   
->   (c - [MIT](https://github.com/tdegeus/cpppath/blob/master/LICENSE)) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | [github.com/tdegeus/cpppath](https://github.com/tdegeus/cpppath)
 
 ## Contents
 
 <!-- MarkdownTOC -->
 
+- [Disclaimer](#disclaimer)
 - [Getting cpppath](#getting-cpppath)
     - [Using conda](#using-conda)
     - [From source](#from-source)
@@ -43,6 +36,14 @@ Simple, header only, file-path module for C++ similar to `os` in Python. This mo
 - [Create a new release](#create-a-new-release)
 
 <!-- /MarkdownTOC -->
+
+# Disclaimer
+
+This library is free to use under the [MIT license](https://github.com/tdegeus/cpppath/blob/master/LICENSE). Any additions are very much appreciated, in terms of suggested functionality, code, documentation, testimonials, word-of-mouth advertisement, etc. Bug reports or feature requests can be filed on [GitHub](https://github.com/tdegeus/cpppath). As always, the code comes with no guarantee. None of the developers can be held responsible for possible mistakes.
+
+Download: [.zip file](https://github.com/tdegeus/cpppath/zipball/master) | [.tar.gz file](https://github.com/tdegeus/cpppath/tarball/master).
+
+(c - [MIT](https://github.com/tdegeus/cpppath/blob/master/LICENSE)) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | [github.com/tdegeus/cpppath](https://github.com/tdegeus/cpppath)
 
 # Getting cpppath
 
@@ -115,15 +116,10 @@ The `CMakeLists.txt` can be as follows
 
 ```cmake
 cmake_minimum_required(VERSION 3.1)
-
 project(example)
-
 find_package(cpppath REQUIRED)
-
-add_library(example main.cpp)
-
-target_link_libraries(example
-    cpppath)
+add_executable(example example.cpp)
+target_link_libraries(example PRIVATE cpppath)
 ```
 
 Compilation (on Unix) can then proceed using 
