@@ -33,10 +33,12 @@
    CPPPATH_VERSION_MINOR == y && \
    CPPPATH_VERSION_PATCH == z)
 
-#ifdef _MSC_VER
-    #define CPPPATH_SEP "\\"
-#else
-    #define CPPPATH_SEP "/"
+#ifndef CPPPATH_SEP
+    #ifdef _MSC_VER
+        #define CPPPATH_SEP "\\"
+    #else
+        #define CPPPATH_SEP "/"
+    #endif
 #endif
 
 // =================================================================================================
