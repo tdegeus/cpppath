@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cpppath)
 
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTS "Build tests" OFF)
 
 # Version
 # =======
