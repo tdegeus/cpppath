@@ -1,8 +1,8 @@
-/* =================================================================================================
+/*
 
 (c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/cppmat
 
-================================================================================================= */
+*/
 
 #ifndef CPPPATH_H
 #define CPPPATH_H
@@ -21,17 +21,17 @@
 
 #define CPPPATH_VERSION_MAJOR 0
 #define CPPPATH_VERSION_MINOR 2
-#define CPPPATH_VERSION_PATCH 0
+#define CPPPATH_VERSION_PATCH 2
 
 #define CPPPATH_VERSION_AT_LEAST(x,y,z) \
-  (CPPPATH_VERSION_MAJOR > x || (CPPPATH_VERSION_MAJOR >= x && \
-  (CPPPATH_VERSION_MINOR > y || (CPPPATH_VERSION_MINOR >= y && \
-                                 CPPPATH_VERSION_PATCH >= z))))
+    (CPPPATH_VERSION_MAJOR > x || (CPPPATH_VERSION_MAJOR >= x && \
+    (CPPPATH_VERSION_MINOR > y || (CPPPATH_VERSION_MINOR >= y && \
+                                   CPPPATH_VERSION_PATCH >= z))))
 
 #define CPPPATH_VERSION(x,y,z) \
-  (CPPPATH_VERSION_MAJOR == x && \
-   CPPPATH_VERSION_MINOR == y && \
-   CPPPATH_VERSION_PATCH == z)
+    (CPPPATH_VERSION_MAJOR == x && \
+     CPPPATH_VERSION_MINOR == y && \
+     CPPPATH_VERSION_PATCH == z)
 
 #ifndef CPPPATH_SEP
     #ifdef _MSC_VER
@@ -41,11 +41,9 @@
     #endif
 #endif
 
-// =================================================================================================
-
 namespace cpppath {
 
-// =========================================== OVERVIEW ============================================
+// === OVERVIEW ===
 
 // Get OS's separator.
 // Unix: "/", Windows: "\\"
@@ -58,7 +56,7 @@ inline std::string sep();
 
 inline std::string dirname(
     const std::string& path,
-    const std::string& sep=CPPPATH_SEP);
+    const std::string& sep = CPPPATH_SEP);
 
 // Get filename part of a path.
 // Depending on the path, an empty string may be returned.
@@ -66,7 +64,7 @@ inline std::string dirname(
 
 inline std::string filename(
     const std::string& path,
-    const std::string& sep=CPPPATH_SEP);
+    const std::string& sep = CPPPATH_SEP);
 
 // Get filename part of a path, without extension.
 // Depending on the path, an empty string may be returned.
@@ -74,8 +72,8 @@ inline std::string filename(
 
 inline std::string filebase(
     const std::string& path,
-    const std::string& sep=CPPPATH_SEP,
-    const std::string& extsep=".");
+    const std::string& sep = CPPPATH_SEP,
+    const std::string& extsep = ".");
 
 // Split the pathname path into a pair (root, ext) such that root + ext == path,
 // and ext is empty or begins with a period and contains at most one period.
@@ -83,7 +81,7 @@ inline std::string filebase(
 
 inline std::vector<std::string> splitext(
     const std::string& path,
-    const std::string& extsep=".");
+    const std::string& extsep = ".");
 
 // Get the extension of a path.
 // Depending on the path, an empty string may be returned.
@@ -91,19 +89,19 @@ inline std::vector<std::string> splitext(
 
 inline std::string ext(
     const std::string& path,
-    const std::string& extsep=".");
+    const std::string& extsep = ".");
 
 // Join sub-paths together using the separator.
 // Provides option to prepend the output string with the separator.
 
 inline std::string join(
     const std::vector<std::string>& paths,
-    const std::string& sep=CPPPATH_SEP);
+    const std::string& sep = CPPPATH_SEP);
 
 inline std::string join(
     const std::vector<std::string>& paths,
     bool preprend,
-    const std::string& sep=CPPPATH_SEP);
+    const std::string& sep = CPPPATH_SEP);
 
 inline std::string join(
     const std::vector<std::string>& paths,
@@ -119,13 +117,13 @@ inline std::string join(
 
 inline std::vector<std::string> split(
     const std::string& path,
-    const std::string& sep=CPPPATH_SEP);
+    const std::string& sep = CPPPATH_SEP);
 
 inline std::vector<std::string> split(
     const std::string& path,
     int begin,
-    int end=0,
-    const std::string& sep=CPPPATH_SEP);
+    int end = 0,
+    const std::string& sep = CPPPATH_SEP);
 
 // Select path of a path.
 // Example: select("/path/to/foo/bar.txt", 2) returns "foo/bar.txt"
@@ -134,14 +132,14 @@ inline std::vector<std::string> split(
 inline std::string select(
     const std::string& path,
     int begin,
-    int end=0,
-    const std::string& sep=CPPPATH_SEP);
+    int end = 0,
+    const std::string& sep = CPPPATH_SEP);
 
 // Normalize a path by collapsing redundant separators and up-level references.
 
 inline std::string normpath(
     const std::string& path,
-    const std::string& sep=CPPPATH_SEP);
+    const std::string& sep = CPPPATH_SEP);
 
 // Select the common prefix in a list of strings.
 
@@ -162,18 +160,14 @@ inline std::string curdir();
 inline bool exists(
     const std::string& path);
 
-// ========================================= IMPLEMENATION =========================================
+// === IMPLEMENATION ===
 
 inline std::string sep()
 {
     return CPPPATH_SEP;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string dirname(
-    const std::string& path,
-    const std::string& sep)
+inline std::string dirname(const std::string& path, const std::string& sep)
 {
   size_t idx = path.find_last_of(sep);
   if (idx == std::string::npos) {
@@ -182,11 +176,7 @@ inline std::string dirname(
   return path.substr(0, idx);
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string filename(
-    const std::string& path,
-    const std::string& sep)
+inline std::string filename(const std::string& path, const std::string& sep)
 {
     size_t idx = path.find_last_of(sep);
     if (idx == std::string::npos) {
@@ -195,22 +185,14 @@ inline std::string filename(
     return path.substr(idx+1, path.length());
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string filebase(
-    const std::string& path,
-    const std::string& sep,
-    const std::string& extsep)
+inline std::string
+filebase(const std::string& path, const std::string& sep, const std::string& extsep)
 {
     std::string out = filename(path, sep);
     return splitext(out, extsep)[0];
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::vector<std::string> splitext(
-    const std::string& path,
-    const std::string& extsep)
+inline std::vector<std::string> splitext(const std::string& path, const std::string& extsep)
 {
     std::string e = ext(path, extsep);
     if (e.size() == 0) {
@@ -219,8 +201,6 @@ inline std::vector<std::string> splitext(
     return {path.substr(0, path.size() - e.size() - extsep.size()), e};
 }
 
-// -------------------------------------------------------------------------------------------------
-
 namespace detail
 {
     inline bool all_extsep(const std::string& path, const std::string& extsep)
@@ -228,20 +208,16 @@ namespace detail
         if (extsep.size() != 1) {
             return false;
         }
-        for (auto &i: path) {
+        for (auto& i : path) {
             if (i != extsep[0]) {
                 return false;
             }
         }
         return true;
     }
-}
+} // namespace detail
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string ext(
-    const std::string& path,
-    const std::string& extsep)
+inline std::string ext(const std::string& path, const std::string& extsep)
 {
     size_t idx = path.find_last_of(extsep);
     if (idx == std::string::npos) {
@@ -253,11 +229,7 @@ inline std::string ext(
     return path.substr(idx + 1);
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string join(
-    const std::vector<std::string>& paths,
-    const std::string& sep)
+inline std::string join(const std::vector<std::string>& paths, const std::string& sep)
 {
     if (paths.size() == 1) {
         return paths[0];
@@ -265,7 +237,7 @@ inline std::string join(
 
     std::string out = "";
 
-    for (auto path: paths) {
+    for (auto path : paths) {
 
         if (out.size() == 0) {
             out += path;
@@ -286,12 +258,8 @@ inline std::string join(
     return out;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string join(
-    const std::vector<std::string>& paths,
-    bool preprend,
-    const std::string& sep)
+inline std::string
+join(const std::vector<std::string>& paths, bool preprend, const std::string& sep)
 {
     if (preprend) {
         return sep + join(paths, sep);
@@ -299,30 +267,17 @@ inline std::string join(
     return join(paths, sep);
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string join(
-    const std::vector<std::string>& paths,
-    const char *sep)
+inline std::string join(const std::vector<std::string>& paths, const char* sep)
 {
     return join(paths, std::string(sep));
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string join(
-    const std::vector<std::string>& paths,
-    bool preprend,
-    const char *sep)
+inline std::string join(const std::vector<std::string>& paths, bool preprend, const char* sep)
 {
     return join(paths, preprend, std::string(sep));
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::vector<std::string> split(
-    const std::string& path,
-    const std::string& sep)
+inline std::vector<std::string> split(const std::string& path, const std::string& sep)
 {
     std::vector<std::string> out;
 
@@ -348,19 +303,13 @@ inline std::vector<std::string> split(
 
         // move further
         prev = pos + sep.length();
-    }
-    while (pos < path.length() && prev < path.length());
+    } while (pos < path.length() && prev < path.length());
 
     return out;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::vector<std::string> split(
-    const std::string& path,
-    int begin,
-    int end,
-    const std::string& sep)
+inline std::vector<std::string>
+split(const std::string& path, int begin, int end, const std::string& sep)
 {
     std::vector<std::string> paths = split(path, sep);
 
@@ -393,13 +342,7 @@ inline std::vector<std::string> split(
     return out;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string select(
-    const std::string& path,
-    int begin,
-    int end,
-    const std::string& sep)
+inline std::string select(const std::string& path, int begin, int end, const std::string& sep)
 {
     std::string prefix = "";
     if (path[0] == sep[0]) {
@@ -408,11 +351,7 @@ inline std::string select(
     return prefix + join(split(path, begin, end), sep);
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string normpath(
-    const std::string& path,
-    const std::string& sep)
+inline std::string normpath(const std::string& path, const std::string& sep)
 {
     bool root = path[0] == sep[0];
 
@@ -423,7 +362,7 @@ inline std::string normpath(
     {
         std::vector<std::string> tmp;
 
-        for (auto& i: paths) {
+        for (auto& i : paths) {
             if (i != ".") {
                 tmp.push_back(i);
             }
@@ -469,8 +408,6 @@ inline std::string normpath(
     return join(paths, sep);
 }
 
-// -------------------------------------------------------------------------------------------------
-
 namespace detail
 {
     bool all_equal(const std::vector<std::string>& paths, size_t i)
@@ -482,12 +419,9 @@ namespace detail
         }
         return true;
     }
-}
+} // namespace detail
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string commonprefix(
-    const std::vector<std::string>& paths)
+inline std::string commonprefix(const std::vector<std::string>& paths)
 {
     if (paths.size() == 0) {
         return "";
@@ -496,7 +430,7 @@ inline std::string commonprefix(
     size_t i;
     size_t n = paths[0].size();
 
-    for (auto& path: paths) {
+    for (auto& path : paths) {
         if (path.size() < n) {
             n = path.size();
         }
@@ -514,15 +448,10 @@ inline std::string commonprefix(
     return paths[0].substr(0, i);
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline std::string commondirname(
-    const std::vector<std::string>& paths)
+inline std::string commondirname(const std::vector<std::string>& paths)
 {
     return dirname(commonprefix(paths));
 }
-
-// -------------------------------------------------------------------------------------------------
 
 inline std::string curdir()
 {
@@ -535,18 +464,12 @@ inline std::string curdir()
     return cwd;
 }
 
-// -------------------------------------------------------------------------------------------------
-
-inline bool exists(
-    const std::string& path)
+inline bool exists(const std::string& path)
 {
     std::ifstream file(path);
     return static_cast<bool>(file);
 }
 
-// =================================================================================================
-
-} // namespace
+} // namespace cpppath
 
 #endif
-
