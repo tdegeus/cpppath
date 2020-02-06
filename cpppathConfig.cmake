@@ -11,7 +11,6 @@
 #   cpppath_INCLUDE_DIRS - the directory containing cpppath headers
 
 include(CMakeFindDependencyMacro)
-find_dependency(xtensor)
 
 if(NOT TARGET cpppath)
     include("${CMAKE_CURRENT_LIST_DIR}/cpppathTargets.cmake")
