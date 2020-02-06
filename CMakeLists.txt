@@ -28,15 +28,13 @@ message(STATUS "Building cpppath v${CPPPATH_VERSION}")
 # Set target
 # ==========
 
-find_package(xtensor REQUIRED)
-
 add_library(cpppath INTERFACE)
 
 target_include_directories(cpppath INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(cpppath INTERFACE xtensor)
+target_compile_features(cpppath INTERFACE cxx_std_14)
 
 # Installation
 # ============
