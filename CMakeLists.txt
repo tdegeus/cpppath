@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cpppath)
 
+option(BUILD_TESTS "Build tests" ON)
+
 # Version
 # =======
 
@@ -33,8 +35,6 @@ add_library(cpppath INTERFACE)
 target_include_directories(cpppath INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-
-target_compile_features(cpppath INTERFACE cxx_std_14)
 
 # Installation
 # ============
@@ -69,3 +69,10 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cpppath.pc.in"
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cpppath.pc"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+
+# Add builds
+# ==========
+
+if(BUILD_TESTS)
+    add_subdirectory(test)
+endif()
