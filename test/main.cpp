@@ -1,7 +1,5 @@
-
-#define CATCH_CONFIG_MAIN // tells Catch to provide a main() - only do this in one cpp file
-#include "cpppath.h"
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
+#include <cpppath.h>
 
 TEST_CASE("cpppath", "cpppath.h")
 {

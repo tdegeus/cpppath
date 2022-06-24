@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+    - main
+
+jobs:
+
+  default-shell:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+        - runs-on: ubuntu-latest
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
+        - runs-on: macos-latest
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
+        - runs-on: windows-latest
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1 -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    name: ${{ matrix.runs-on }} • x64 ${{ matrix.args }}
+    runs-on: ${{ matrix.runs-on }}
+
+    steps:
+
+    - name: Basic GitHub action setup
+      uses: actions/checkout@v2
+
+    - name: Set conda environment
+      uses: mamba-org/provision-with-micromamba@main
+      with:
+        environment-file: environment.yaml
+        environment-name: myenv
+        cache-env: true
+        extra-specs: |
+          sel(win): ninja
+          sel(win): clang_win-64
+
+    - name: Configure using CMake
+      run: cmake -Bbuild ${{ matrix.config }}
+
+    - name: Build C++ tests
+      working-directory: build
+      run: cmake --build .
+
+    - name: Run C++ tests
+      working-directory: build
+      run: ctest --output-on-failure

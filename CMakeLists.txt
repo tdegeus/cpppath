@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cpppath)
 
+option(BUILD_ALL "Build tests" OFF)
 option(BUILD_TESTS "Build tests" OFF)
 
 # Version
@@ -41,6 +42,7 @@ target_include_directories(cpppath INTERFACE
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+include(CTest)
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/cpppath.h" DESTINATION include)
 
@@ -73,6 +75,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cpppath.pc"
 # Add builds
 # ==========
 
-if(BUILD_TESTS)
+if(BUILD_TESTS OR BUILD_ALL)
+    enable_testing()
     add_subdirectory(test)
 endif()
