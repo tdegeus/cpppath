@@ -19,17 +19,37 @@
 #define GetCurrentDir getcwd
 #endif
 
-#define CPPPATH_VERSION_MAJOR 0
-#define CPPPATH_VERSION_MINOR 2
-#define CPPPATH_VERSION_PATCH 1
+/**
+\cond
+*/
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+/**
+\endcond
+*/
 
-#define CPPPATH_VERSION_AT_LEAST(x, y, z) \
-    (CPPPATH_VERSION_MAJOR > x || \
-     (CPPPATH_VERSION_MAJOR >= x && \
-      (CPPPATH_VERSION_MINOR > y || (CPPPATH_VERSION_MINOR >= y && CPPPATH_VERSION_PATCH >= z))))
+/**
+Library version.
 
-#define CPPPATH_VERSION(x, y, z) \
-    (CPPPATH_VERSION_MAJOR == x && CPPPATH_VERSION_MINOR == y && CPPPATH_VERSION_PATCH == z)
+Either:
+
+-   Configure using CMake at install time. Internally uses:
+
+        python -c "from setuptools_scm import get_version; print(get_version())"
+
+-   Define externally using:
+
+        -DCPPPATH_VERSION="..."
+
+    From the root of this project. This is what ``setup.py`` does.
+
+Note that both ``CMakeLists.txt`` and ``setup.py`` will construct the version using
+``setuptools_scm``. Tip: use the environment variable ``SETUPTOOLS_SCM_PRETEND_VERSION`` to
+overwrite the automatic version.
+*/
+#ifndef CPPPATH_VERSION
+#define CPPPATH_VERSION "@PROJECT_VERSION@"
+#endif
 
 #ifndef CPPPATH_SEP
 #ifdef _MSC_VER
@@ -40,6 +60,33 @@
 #endif
 
 namespace cpppath {
+
+namespace detail {
+
+/**
+Remove " from string.
+
+\param arg Input string.
+\return String without "
+*/
+inline std::string unquote(const std::string& arg)
+{
+    std::string ret = arg;
+    ret.erase(std::remove(ret.begin(), ret.end(), '\"'), ret.end());
+    return ret;
+}
+
+} // namespace detail
+
+/**
+Return version string, for example `"0.1.0"`
+
+\return std::string
+*/
+inline std::string version()
+{
+    return detail::unquote(std::string(QUOTE(CPPPATH_VERSION)));
+}
 
 // === OVERVIEW ===
 

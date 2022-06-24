@@ -3,3 +3,4 @@ channels:
 dependencies:
 - catch2
 - cmake
+- setuptools_scm
