@@ -1,0 +1,5 @@
+channels:
+- conda-forge
+dependencies:
+- catch2
+- cmake
