@@ -4,7 +4,7 @@
 [![Appveyor](https://ci.appveyor.com/api/projects/status/aw19lhd9x6oma9ob?svg=true)](https://ci.appveyor.com/project/tdegeus/cpppath)
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/cpppath.svg)](https://anaconda.org/conda-forge/cpppath)
 
-Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy, but it might be helpful to accomplish some simple tasks. 
+Simple, header only, file-path module for C++ similar to `os` in Python. This module is nothing fancy, but it might be helpful to accomplish some simple tasks.
 
 ## Contents
 
@@ -87,17 +87,17 @@ int main()
 }
 ```
 
-which will print 
+which will print
 
 * Unix: `"path/to/foo/bar.txt"`
 * Windows: `"path\to\foo\bar.txt"`
 
 >   All functions take the file-path separator as argument to allow customisation. To overwrite the library-wide default `/` on Unix and `\` use:
->   
+>
 >   ```cpp
 >   #define CPPPATH_SEP "/"
 >   ```
->   
+>
 >   **before** including *cpppath* for the first time.
 
 # Compiling
@@ -157,10 +157,10 @@ Get OS's separator.
 
 ## cpppath::dirname
 
-Get dirname part of a path. 
+Get dirname part of a path.
 Depending on the path, an empty string may be returned.
 
-Example: 
+Example:
 
 ```cpp
 std::cout << cpppath::dirname("/path/to/foo/bar.txt") << std::endl;
@@ -174,10 +174,10 @@ outputs:
 
 ## cpppath::filename
 
-Get filename part of a path. 
+Get filename part of a path.
 Depending on the path, an empty string may be returned.
 
-Example: 
+Example:
 
 ```cpp
 std::cout << cpppath::filename("/path/to/foo/bar.txt") << std::endl;
@@ -194,7 +194,7 @@ outputs:
 Get filename part of a path, *without extension*.
 Depending on the path, an empty string may be returned.
 
-Example: 
+Example:
 
 ```cpp
 std::cout << cpppath::filebase("/path/to/foo/bar.txt") << std::endl;
@@ -217,7 +217,7 @@ Leading periods on the basename are ignored; `cpppath::splitext(".cshrc")` retur
 Get the extension of a path.
 Depending on the path, an empty string may be returned.
 
-Example: 
+Example:
 
 ```cpp
 std::cout << cpppath::ext("/path/to/foo/bar.txt") << std::endl;
@@ -231,7 +231,7 @@ outputs:
 
 ## cpppath::split
 
-Split sub-paths using the separator. The output is a list of path components. 
+Split sub-paths using the separator. The output is a list of path components.
 
 Optionally the list can be sliced as `cpppath::split(path, begin, end)` (Python equivalent: `os.split(path)[begin: end]`). Negative indices may be used to that count from the right (instead of from the left).
 
@@ -244,25 +244,25 @@ Provides option to prepend the output string with the separator.
 
 Selection of sub-paths (see `split`). Negative indices may be used to that count from the right (instead of from the left).
 
-Example 1: 
+Example 1:
 
 ```cpp
 std::cout << cpppath::select("/path/to/foo/bar.txt", 2) << std::endl;
 ```
 
-outputs 
+outputs
 
 ```
 "foo/bar.txt"
 ```
 
-Example 2: 
+Example 2:
 
 ```cpp
 std::cout << select("/path/to/foo/bar.txt", 2, 3) << std::endl;
 ```
 
-outputs 
+outputs
 
 ```
 "foo"
@@ -281,7 +281,7 @@ std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/f
 std::cout << cpppath::commonprefix(paths) << std::endl;
 ```
 
-outputs 
+outputs
 
 ```
 "/path/to/id=00"
@@ -296,7 +296,7 @@ std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/f
 std::cout << cpppath::commondirname(paths) << std::endl;
 ```
 
-outputs 
+outputs
 
 ```
 "/path/to"
@@ -309,7 +309,7 @@ std::vector<std::string> paths = {"/path/to/id=000/file.txt", "/path/to/id=001/f
 std::cout << cpppath::split(paths[0], cpppath::commondirname(paths)+"/")[0] << std::endl;
 ```
 
-outputs 
+outputs
 
 ```
 "id=000/file.txt"
