@@ -1,81 +1,98 @@
-
-cmake_minimum_required(VERSION 3.0)
-
-# Basic settings
-# ==============
+cmake_minimum_required(VERSION 3.18..3.21)
 
 project(cpppath)
 
-option(BUILD_ALL "Build tests" OFF)
-option(BUILD_TESTS "Build tests" OFF)
+string(TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
 
-# Version
-# =======
+# Command-line options
+# ====================
 
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/cpppath.h" cpppath_version_defines
-     REGEX "#define CPPPATH_VERSION_(MAJOR|MINOR|PATCH)")
+option(BUILD_ALL "${PROJECT_NAME}: Build tests" OFF)
+option(BUILD_TESTS "${PROJECT_NAME}: Build tests" OFF)
 
-foreach(ver ${cpppath_version_defines})
-    if(ver MATCHES "#define CPPPATH_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
-        set(CPPPATH_VERSION_${CMAKE_MATCH_1}
-            "${CMAKE_MATCH_2}"
-            CACHE INTERNAL "")
-    endif()
-endforeach()
+# Read version
+# ============
 
-set(CPPPATH_VERSION
-    ${CPPPATH_VERSION_MAJOR}.${CPPPATH_VERSION_MINOR}.${CPPPATH_VERSION_PATCH})
+if (DEFINED ENV{SETUPTOOLS_SCM_PRETEND_VERSION})
+    set(PROJECT_VERSION $ENV{SETUPTOOLS_SCM_PRETEND_VERSION})
+    message(STATUS "Building ${PROJECT_NAME} ${PROJECT_VERSION} (read from SETUPTOOLS_SCM_PRETEND_VERSION)")
+else()
+    execute_process(
+        COMMAND python -c "from setuptools_scm import get_version; print(get_version())"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE PROJECT_VERSION
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-message(STATUS "Building cpppath v${CPPPATH_VERSION}")
+    message(STATUS "Building ${PROJECT_NAME} ${PROJECT_VERSION}")
+endif()
 
 # Set target
 # ==========
 
-add_library(cpppath INTERFACE)
+add_library(${PROJECT_NAME} INTERFACE)
 
-target_include_directories(cpppath INTERFACE
+target_include_directories(${PROJECT_NAME} INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-# Installation
-# ============
+target_compile_definitions(${PROJECT_NAME} INTERFACE
+    ${PROJECT_NAME_UPPER}_VERSION="${PROJECT_VERSION}")
+
+# Libraries
+# =========
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(CTest)
+include("${PROJECT_NAME}Config.cmake")
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/cpppath.h" DESTINATION include)
+# Installation headers / CMake / pkg-config
+# =========================================
 
-install(TARGETS cpppath EXPORT cpppath-targets)
+if(NOT SKBUILD)
 
-install(
-    EXPORT cpppath-targets
-    FILE cpppathTargets.cmake
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/cpppath")
+    configure_file("include/${PROJECT_NAME}.h"
+                   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.h"
+                    @ONLY)
 
-set(_CPPPATH ${CMAKE_SIZEOF_VOID_P})
-unset(CMAKE_SIZEOF_VOID_P)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.h"
+            DESTINATION "include/")
 
-write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/cpppathConfigVersion.cmake"
-    VERSION ${CPPPATH_VERSION}
-    COMPATIBILITY AnyNewerVersion)
+    install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}-targets)
 
-set(CMAKE_SIZEOF_VOID_P ${_CPPPATH})
+    install(
+        EXPORT ${PROJECT_NAME}-targets
+        FILE "${PROJECT_NAME}Targets.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cpppathConfig.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/cpppathConfigVersion.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/cpppath")
+    set(${PROJECT_NAME}_TMP ${CMAKE_SIZEOF_VOID_P})
+    unset(CMAKE_SIZEOF_VOID_P)
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cpppath.pc.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/cpppath.pc" @ONLY)
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        VERSION "${PROJECT_VERSION}"
+        COMPATIBILITY AnyNewerVersion)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cpppath.pc"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+    set(CMAKE_SIZEOF_VOID_P ${${PROJECT_NAME}_TMP})
 
-# Add builds
-# ==========
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake"
+                  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc" @ONLY)
+
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+
+endif()
+
+# Build tests
+# ===========
 
 if(BUILD_TESTS OR BUILD_ALL)
+
     enable_testing()
-    add_subdirectory(test)
+    add_subdirectory(tests)
+
 endif()
