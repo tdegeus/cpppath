@@ -410,7 +410,7 @@ inline std::string normpath(const std::string& path, const std::string& sep)
 
 namespace detail
 {
-    bool all_equal(const std::vector<std::string>& paths, size_t i)
+    inline bool all_equal(const std::vector<std::string>& paths, size_t i)
     {
         for (size_t j = 1; j < paths.size(); ++j) {
             if (paths[0][i] != paths[j][i]) {
